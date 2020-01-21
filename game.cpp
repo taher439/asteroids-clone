@@ -50,3 +50,16 @@ Game::get_win(void)
 {
   return this->win;
 }
+
+void Game::proc_input(void) 
+{
+  while(!this->quit) { 
+    while(SDL_PollEvent(&this->ev) != 0) {
+          
+      if(this->ev.type == SDL_QUIT)
+        this->quit = true;
+    }
+
+    SDL_UpdateWindowSurface(this->win);
+  }
+}

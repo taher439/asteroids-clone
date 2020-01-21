@@ -11,6 +11,8 @@ class Game
   private:
     SDL_Window *win;
     SDL_Surface *surf;
+    bool quit = false;
+    SDL_Event ev;
 
   public:
     const int SCREEN_WIDTH = 640;
@@ -24,6 +26,7 @@ class Game
     SDL_Window    *get_win              (void);
                    Game                 (void);
     void           kill                 (void);
+    void           proc_input           (void);
 };
 
 #endif 
