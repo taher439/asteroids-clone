@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS= -W -Wall -Wextra -O2 -g -Werror
-LIBS=-lSDL2 -lSDL2main
+LIBS=-lSDL2 -lSDL2main -lSDL_image
 
 SRC=$(wildcard *.cpp)
 OBJS=$(SRC:.cpp=.o)
