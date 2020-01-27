@@ -39,7 +39,14 @@ class Game
     SDL_Renderer *rend;
     SDL_Event     ev;
     std::vector<std::shared_ptr<Player>> players;
+    enum state {
+      MENU,
+      GAME,
+      CONFIG
+    };
 
+    state current_state;
+    
   public:
     const int SCREEN_WIDTH = 640;
     const int SCREEN_HEIGHT = 480;
@@ -57,5 +64,4 @@ class Game
     SDL_Window    *get_win              (void);
                    Game                 (void);
 };
-
 #endif 

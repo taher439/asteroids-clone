@@ -50,8 +50,12 @@ Game::init(void)
 void 
 Game::kill(void) 
 {
-    SDL_DestroyWindow(this->win);
-    SDL_Quit();
+  for (auto& p: this->players) {
+    SDL_DestroyTexture(p->get_tex());
+  }
+  SDL_DestroyRenderer(this->rend);
+  SDL_DestroyWindow(this->win);
+  SDL_Quit();
 }
 
 SDL_Window *
@@ -78,6 +82,8 @@ void Game::proc_input(void)
     SDL_RenderPresent(this->rend);
 
   }
+
+  this->kill();
 }
 
 void 
