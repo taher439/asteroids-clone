@@ -18,27 +18,20 @@ Game::init(void)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
       ret_err_SDL("SDL could not initialize! SDL_Error");
-     
     if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
       std::cerr << "Warning: Linear texture filtering not enabled!\n";
-
     this->win = SDL_CreateWindow("SDL Tutorial", 
                                   SDL_WINDOWPOS_UNDEFINED, 
                                   SDL_WINDOWPOS_UNDEFINED, 
                                   this->SCREEN_WIDTH, 
                                   this->SCREEN_HEIGHT, 
                                   SDL_WINDOW_SHOWN);
-
     if (this->win == NULL) 
       ret_err_SDL("Window could not be created! SDL_Error");
-
     this->rend = SDL_CreateRenderer(this->win, -1, SDL_RENDERER_ACCELERATED);
-
     if (this->rend == NULL) 
       ret_err_SDL("Renderer could not be created! SDL_Error");
-
     SDL_SetRenderDrawColor(this->rend, 0xff, 0xff, 0xff, 0xff);
-    
     int imgFlags = IMG_INIT_PNG;
     if(!(IMG_Init(imgFlags) & imgFlags))
       std::cerr 
@@ -67,22 +60,16 @@ Game::get_win(void)
 void Game::proc_input(void) 
 {
   while(!this->quit) { 
-    while(SDL_PollEvent(&this->ev) != 0) {
-          
+    while(SDL_PollEvent(&this->ev) != 0) {       
       if(this->ev.type == SDL_QUIT)
         this->quit = true;
     }
-
     SDL_RenderClear(this->rend);
-
     for (auto& p: this->players) {
       SDL_RenderCopy(this->rend, p->get_tex(), p->get_rect_src(), p->get_rect_dst());
     }
-
     SDL_RenderPresent(this->rend);
-
   }
-
   this->kill();
 }
 
@@ -95,7 +82,6 @@ Game::load_tex(std::shared_ptr<Player> player,
   player->set_surf(IMG_Load(path.c_str()));
   player->set_rect_dst(dst);
   player->set_rect_src(src);
-
   if(player->get_surf() == NULL)
     std::cerr 
          << "Unable to load image, SDL_image Error " 
