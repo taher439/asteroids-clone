@@ -18,6 +18,9 @@ Game::init(void)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
       ret_err_SDL("SDL could not initialize! SDL_Error");
+     
+    if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+      std::cerr << "Warning: Linear texture filtering not enabled!\n";
 
     this->win = SDL_CreateWindow("SDL Tutorial", 
                                   SDL_WINDOWPOS_UNDEFINED, 
@@ -68,8 +71,9 @@ void Game::proc_input(void)
 
     SDL_RenderClear(this->rend);
 
-    for (auto& p: this->players)
-      SDL_RenderCopy(this->rend, p->get_tex(), NULL, NULL);
+    for (auto& p: this->players) {
+      SDL_RenderCopy(this->rend, p->get_tex(), p->get_rect_src(), p->get_rect_dst());
+    }
 
     SDL_RenderPresent(this->rend);
 
@@ -77,14 +81,18 @@ void Game::proc_input(void)
 }
 
 void 
-Game::load_tex(std::unique_ptr<Player> player, 
-               std::string path)
+Game::load_tex(std::shared_ptr<Player> player, 
+               std::string path, 
+               SDL_Rect * src, 
+               SDL_Rect * dst)
 {
   player->set_surf(IMG_Load(path.c_str()));
+  player->set_rect_dst(dst);
+  player->set_rect_src(src);
 
   if(player->get_surf() == NULL)
     std::cerr 
-         << "Unable to load image %s! SDL_image Error" 
+         << "Unable to load image, SDL_image Error " 
          << path.c_str() << " " 
          << IMG_GetError() 
          << std::endl;
@@ -93,11 +101,12 @@ Game::load_tex(std::unique_ptr<Player> player,
     player->set_tex(SDL_CreateTextureFromSurface(this->rend, player->get_surf()));
     if (player->get_tex() == NULL)
       std::cerr 
-           << "Unable to create texture from %s! SDL Error: %s\n"
+           << "Unable to create texture from %s! SDL Error: "
            << path.c_str() << " "
-           <<SDL_GetError();
+           << SDL_GetError() 
+           << std::endl;
     SDL_FreeSurface(player->get_surf());
-    this->players.push_back(std::move(player));
+    this->players.push_back(player);
   }
 }
 
@@ -122,5 +131,34 @@ Player::set_tex(SDL_Texture * tex)
 void
 Player::set_surf(SDL_Surface * surf)
 {
-  surf = this->player_surf;
+  this->player_surf = surf;
+}
+
+Player::Player() {
+  int x = 640;
+  int y = 640;
+}
+
+void 
+Player::set_rect_src(SDL_Rect *rect) 
+{
+  this->src = rect;
+}
+
+void 
+Player::set_rect_dst(SDL_Rect *rect) 
+{
+  this->dst = rect;
+}
+
+SDL_Rect *
+Player::get_rect_dst(void) 
+{
+  return this->dst;
+}
+
+SDL_Rect *
+Player::get_rect_src(void) 
+{
+  return this->src;
 }
