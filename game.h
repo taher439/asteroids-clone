@@ -9,16 +9,21 @@
 #include <zlib.h>
 #include <png.h>
 #include "memory"
+#include <cmath>
+#define PI 3.14159265
 
 class Player 
 {
   private:
-    double x, y;
+    double x, y, angle;
     SDL_Texture *texture;
     SDL_Surface *player_surf;
     SDL_Rect    *dst, *src;
 
   public:
+    void           set_angle            (double);
+    void           set_x                (double);
+    void           set_y                (double);
     void           set_surf             (SDL_Surface *);
     void           set_tex              (SDL_Texture *);
     void           set_rect_src         (SDL_Rect *);
@@ -27,6 +32,9 @@ class Player
     SDL_Texture   *get_tex              (void);
     SDL_Rect      *get_rect_dst         (void);  
     SDL_Rect      *get_rect_src         (void);
+    double         get_angle            (void);
+    double         get_x                (void);
+    double         get_y                (void);
                    Player               (void);
                   
 };
@@ -39,6 +47,8 @@ class Game
     SDL_Renderer *rend;
     SDL_Event     ev;
     std::vector<std::shared_ptr<Player>> players;
+    std::shared_ptr<Player> main_player;
+
     enum state {
       MENU,
       GAME,
@@ -63,5 +73,9 @@ class Game
     SDL_Surface   *get_surf             (void);
     SDL_Window    *get_win              (void);
                    Game                 (void);
+    
+    std::shared_ptr<Player> 
+                  get_main_player       (void);
+    void          set_main_player       (std::shared_ptr<Player>);
 };
 #endif 

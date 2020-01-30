@@ -51,26 +51,42 @@ Game::kill(void)
   SDL_Quit();
 }
 
-SDL_Window *
-Game::get_win(void) 
-{
-  return this->win;
-}
-
 void Game::proc_input(void) 
 {
+  double sprite_angle = 0;
+  int x, y;
+
   while(!this->quit) { 
     while(SDL_PollEvent(&this->ev) != 0) {       
-      if(this->ev.type == SDL_QUIT)
-        this->quit = true;
+      switch(this->ev.type) {
+        case SDL_QUIT:
+          this->quit = true;
+          break;
+        case SDL_MOUSEMOTION:
+          SDL_GetMouseState(&x, &y);
+          int delta_x = main_player->get_x() - x;
+          int delta_y = main_player->get_y() - y;
+          sprite_angle = (atan2(delta_y, delta_x) * 180.0000) / PI;
+          main_player->set_angle(sprite_angle);
+          break;
+      }
     }
     SDL_RenderClear(this->rend);
     for (auto& p: this->players) {
-      SDL_RenderCopy(this->rend, p->get_tex(), p->get_rect_src(), p->get_rect_dst());
+      SDL_RenderCopyEx(this->rend, 
+                     p->get_tex(), 
+                     p->get_rect_src(), 
+                     p->get_rect_dst(), 
+                     p->get_angle(),
+                     NULL, SDL_FLIP_NONE);
     }
+      
+
     SDL_RenderPresent(this->rend);
   }
-  this->kill();
+  
+  if (this->quit)
+    this->kill();
 }
 
 void 
@@ -127,8 +143,44 @@ Player::set_surf(SDL_Surface * surf)
 }
 
 Player::Player() {
-  int x = 640;
-  int y = 640;
+  this->x = 640 / 2 - 8;
+  this->y = 480 / 2 - 8;
+}
+
+void 
+Player::set_x(double x) 
+{
+  this->x = x;
+}
+
+double
+Player::get_x(void) 
+{
+  return this->x;
+}
+
+void 
+Player::set_y(double y) 
+{
+  this->y = y;
+}
+
+double
+Player::get_y(void) 
+{
+  return this->x;
+}
+
+void 
+Player::set_angle(double a) 
+{
+  this->angle = a;
+}
+
+double
+Player::get_angle(void) 
+{
+  return this->angle;
 }
 
 void 
@@ -153,4 +205,22 @@ SDL_Rect *
 Player::get_rect_src(void) 
 {
   return this->src;
+}
+
+SDL_Window *
+Game::get_win(void) 
+{
+  return this->win;
+}
+
+std::shared_ptr<Player> 
+Game::get_main_player(void) 
+{
+  return this->main_player;
+}
+
+void
+Game::set_main_player(std::shared_ptr<Player> p) 
+{
+  this->main_player = p;
 }

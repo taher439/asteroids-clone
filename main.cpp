@@ -19,7 +19,7 @@ main(int argc, char *argv[])
   dst->w = 50;
   dst->x = 640 / 2 - 8;
   dst->y = 480 / 2 - 8;
-
   test->load_tex(p, "./ship.png", src.get(), dst.get());
+  test->set_main_player(p);
   test->proc_input();
 }
