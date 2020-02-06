@@ -1,4 +1,6 @@
 #include "game.h"
+#include "player.h"
+#include "sdl_wrapper.h"
 
 int 
 main(int argc, char *argv[])

@@ -1,11 +1,6 @@
 #include "game.h"
-
-inline void 
-ret_err_SDL(const std::string& err_msg) 
-{
-  std::cerr << err_msg << ": " << SDL_GetError() << std::endl;
-  exit(EXIT_FAILURE);
-}
+#include "sdl_wrapper.h"
+#include "player.h"
 
 Game::Game() 
 {
@@ -16,28 +11,6 @@ Game::Game()
 void 
 Game::init(void) 
 {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-      ret_err_SDL("SDL could not initialize! SDL_Error");
-    if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
-      std::cerr << "Warning: Linear texture filtering not enabled!\n";
-    this->win = SDL_CreateWindow("SDL Tutorial", 
-                                  SDL_WINDOWPOS_UNDEFINED, 
-                                  SDL_WINDOWPOS_UNDEFINED, 
-                                  this->SCREEN_WIDTH, 
-                                  this->SCREEN_HEIGHT, 
-                                  SDL_WINDOW_SHOWN);
-    if (this->win == NULL) 
-      ret_err_SDL("Window could not be created! SDL_Error");
-    this->rend = SDL_CreateRenderer(this->win, -1, SDL_RENDERER_ACCELERATED);
-    if (this->rend == NULL) 
-      ret_err_SDL("Renderer could not be created! SDL_Error");
-    SDL_SetRenderDrawColor(this->rend, 0xff, 0xff, 0xff, 0xff);
-    int imgFlags = IMG_INIT_PNG;
-    if(!(IMG_Init(imgFlags) & imgFlags))
-      std::cerr 
-        << "SDL_image could not initialize! SDL_image Error: " 
-        << IMG_GetError() 
-        << std::endl;
 }
 
 void 
@@ -118,25 +91,25 @@ Game::load_tex(std::shared_ptr<Player> player,
   }
 }
 
-SDL_Texture *
+inline SDL_Texture *
 Player::get_tex(void)
 {
   return this->texture;
 }
 
-SDL_Surface *
+inline SDL_Surface *
 Player::get_surf(void)
 {
   return this->player_surf;
 }
 
-void
+inline void
 Player::set_tex(SDL_Texture * tex)
 {
   this->texture = tex;
 }
 
-void
+inline void
 Player::set_surf(SDL_Surface * surf)
 {
   this->player_surf = surf;
@@ -147,79 +120,79 @@ Player::Player() {
   this->y = 480 / 2 - 8;
 }
 
-void 
+inline void 
 Player::set_x(double x) 
 {
   this->x = x;
 }
 
-double
+inline double
 Player::get_x(void) 
 {
   return this->x;
 }
 
-void 
+inline void 
 Player::set_y(double y) 
 {
   this->y = y;
 }
 
-double
+inline double
 Player::get_y(void) 
 {
   return this->x;
 }
 
-void 
+inline void 
 Player::set_angle(double a) 
 {
   this->angle = a;
 }
 
-double
+inline double
 Player::get_angle(void) 
 {
   return this->angle;
 }
 
-void 
+inline void 
 Player::set_rect_src(SDL_Rect *rect) 
 {
   this->src = rect;
 }
 
-void 
+inline void 
 Player::set_rect_dst(SDL_Rect *rect) 
 {
   this->dst = rect;
 }
 
-SDL_Rect *
+inline SDL_Rect *
 Player::get_rect_dst(void) 
 {
   return this->dst;
 }
 
-SDL_Rect *
+inline SDL_Rect *
 Player::get_rect_src(void) 
 {
   return this->src;
 }
 
-SDL_Window *
+inline SDL_Window *
 Game::get_win(void) 
 {
   return this->win;
 }
 
-std::shared_ptr<Player> 
+inline std::shared_ptr<Player> 
 Game::get_main_player(void) 
 {
   return this->main_player;
 }
 
-void
+inline void
 Game::set_main_player(std::shared_ptr<Player> p) 
 {
   this->main_player = p;
