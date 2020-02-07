@@ -1,5 +1,5 @@
 #include "sdl_wrapper.h"
-#include "game.h"
+#include "player.h"
 
 static inline void 
 ret_err_SDL(const std::string& err_msg) 
@@ -60,9 +60,9 @@ SDL_wrapper::rend_copy_ex(const std::shared_ptr<SDL_Renderer> rend,
 {
   int ret;
   ret = SDL_RenderCopyEx(rend.get(), 
-                   p->get_tex(), 
-                   p->get_rect_src(), 
-                   p->get_rect_dst(), 
+                   p->get_tex().get(), 
+                   p->get_rect_src().get(), 
+                   p->get_rect_dst().get(), 
                    p->get_angle(),
                    NULL, SDL_FLIP_NONE);
 
@@ -70,7 +70,8 @@ SDL_wrapper::rend_copy_ex(const std::shared_ptr<SDL_Renderer> rend,
     ret_err_SDL("Renderer copy! SDL_Error");
 }
 
-inline void SDL_wrapper::rend_clear(const std::shared_ptr<SDL_Renderer> rend)
+void 
+SDL_wrapper::rend_clear(const std::shared_ptr<SDL_Renderer> rend)
 {
   if (SDL_RenderClear(rend.get()) < 0)
     ret_err_SDL("Renderer clear! SDL_Error");

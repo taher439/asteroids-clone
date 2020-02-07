@@ -1,5 +1,15 @@
-#include "game.h"
-#include "sdl_wrapper.h"
+#ifndef _PLAYER_H
+#define _PLAYER_H
+#include <memory>
+#include <stdlib.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <zlib.h>
+#include <png.h>
+#include <cmath>
 
 class Player 
 {
@@ -10,28 +20,57 @@ class Player
     std::shared_ptr<SDL_Rect>    dst, src;
 
   public:
-    inline void           set_angle            (double);
-    inline void           set_x                (double);
-    inline void           set_y                (double);
-    inline void           set_surf             (std::shared_ptr<SDL_Surface>);
-    inline void           set_tex              (std::shared_ptr<SDL_Texture>);
-    inline void           set_rect_src         (std::shared_ptr<SDL_Rect>);
-    inline void           set_rect_dst         (std::shared_ptr<SDL_Rect>);
+    inline void           set_angle            (double a)
+                            {this->angle = a;}
+
+    inline void           set_x                (double x)
+                            {this->x = x;}
+
+    inline void           set_y                (double y)
+                            {this->y = y;}
+
+    inline void           set_surf             (std::shared_ptr<SDL_Surface> surf)
+                            {this->player_surf = surf;}
+
+    inline void           set_tex              (std::shared_ptr<SDL_Texture> tex)
+                            {this->texture = tex;}
+
+    inline void           set_rect_src         (std::shared_ptr<SDL_Rect> src)
+                            {this->src = src;}
+
+    inline void           set_rect_dst         (std::shared_ptr<SDL_Rect> dst)
+                            {this->dst = dst;}
+
     inline std::shared_ptr<SDL_Surface>
-                          get_surf             (void);
+                          get_surf             (void)
+                            {return this->player_surf;}
 
     inline std::shared_ptr<SDL_Texture>
-                          get_tex              (void);
+                          get_tex              (void)
+                            {return this->texture;}
 
     inline std::shared_ptr<SDL_Rect>
-                          get_rect_dst         (void);
+                          get_rect_dst         (void)
+                            {return this->dst;}
 
     inline std::shared_ptr<SDL_Rect>
-                          get_rect_src         (void);
+                          get_rect_src         (void)
+                            {return this->src;}
 
-    inline double         get_angle            (void);
-    inline double         get_x                (void);
-    inline double         get_y                (void);
-                          Player               (void);
+    inline double         get_angle            (void)
+                            {return this->angle;}
+
+    inline double         get_x                (void)
+                            {return this->x;}
+
+    inline double         get_y                (void)
+                            {return this->y;}
+
+                          Player               (void) {
+                            this->x = 640 / 2 - 8;
+                            this->y = 480 / 2 - 8;
+                          }
                   
 };
+
+#endif

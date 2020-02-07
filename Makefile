@@ -11,7 +11,7 @@ all: main clean_obj
 main: $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-%.o: %.c
+%.o: %.cpp
 	$(CC) $(CFLAGS) -c $< $(LIBS)
 
 clean_obj:

@@ -8,9 +8,11 @@
 #include <vector>
 #include <zlib.h>
 #include <png.h>
-#include "memory"
+#include <memory>
 #include <cmath>
 #define PI 3.14159265
+class Player;
+class SDL_wrapper;
 
 class Game 
 {
@@ -39,7 +41,7 @@ class Game
     void                  load_tex             (std::shared_ptr<Player>,
                                                 std::string, 
                                                 std::shared_ptr<SDL_Rect>, 
-                                                std::shared_ptr<SDL_Rect);
+                                                std::shared_ptr<SDL_Rect>);
 
     void                  kill                 (void);
     void                  proc_input           (void);
@@ -48,21 +50,23 @@ class Game
     inline void           set_surf             (std::shared_ptr<SDL_Surface>);
     inline void           set_rend             (std::shared_ptr<SDL_Renderer>);
     inline std::shared_ptr<SDL_Renderer> 
-                          get_rend             (void);
+                          get_rend             (void)
+                            {return this->rend;}
 
     inline std::shared_ptr<SDL_Surface>
-                          get_surf             (void);
+                          get_surf             (void)
+                            {return this->surf;}
 
     inline std::shared_ptr<SDL_Window>
-                          get_win              (void);
+                          get_win              (void)
+                            {return this->win;}
+
                           Game                 (void);
     
     inline std::shared_ptr<Player> 
-                         get_main_player       (void);
-    inline void          set_main_player       (std::shared_ptr<Player>);
+                         get_main_player       (void)
+                           {return this->main_player;}
+    inline void          set_main_player       (std::shared_ptr<Player> p)
+                           {this->main_player = p;}
 };
-
-class SDL_Wrapper {
-  
-}
 #endif 

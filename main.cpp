@@ -3,7 +3,7 @@
 #include "sdl_wrapper.h"
 
 int 
-main(int argc, char *argv[])
+main(void)
 {
   std::unique_ptr<Game>    test = std::make_unique<Game>();
   test->init();
@@ -21,7 +21,7 @@ main(int argc, char *argv[])
   dst->w = 50;
   dst->x = 640 / 2 - 8;
   dst->y = 480 / 2 - 8;
-  test->load_tex(p, "./ship.png", src.get(), dst.get());
+  test->load_tex(p, "./ship.png", src, dst);
   test->set_main_player(p);
   test->proc_input();
 }
