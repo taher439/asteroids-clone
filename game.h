@@ -38,8 +38,8 @@ class Game
     
     void                  load_tex             (std::shared_ptr<Player>,
                                                 std::string, 
-                                                SDL_Rect *, 
-                                                SDL_Rect *);
+                                                std::shared_ptr<SDL_Rect>, 
+                                                std::shared_ptr<SDL_Rect);
 
     void                  kill                 (void);
     void                  proc_input           (void);

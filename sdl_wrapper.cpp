@@ -1,4 +1,5 @@
 #include "sdl_wrapper.h"
+#include "game.h"
 
 static inline void 
 ret_err_SDL(const std::string& err_msg) 
@@ -43,7 +44,7 @@ SDL_wrapper::creat_rend(const std::shared_ptr<SDL_Window> win)
   if (rend == nullptr) 
     ret_err_SDL("Renderer could not be created! SDL_Error");
   
-  SDL_SetRenderDrawColor(rend, 0xff, 0xff, 0xff, 0xff);
+  SDL_SetRenderDrawColor(rend.get(), 0xff, 0xff, 0xff, 0xff);
   int imgFlags = IMG_INIT_PNG;
   if(!(IMG_Init(imgFlags) & imgFlags))
     std::cerr 
@@ -51,4 +52,26 @@ SDL_wrapper::creat_rend(const std::shared_ptr<SDL_Window> win)
       << IMG_GetError() 
       << std::endl;
   return rend;
+}
+
+void 
+SDL_wrapper::rend_copy_ex(const std::shared_ptr<SDL_Renderer> rend, 
+                          const std::shared_ptr<Player> p) 
+{
+  int ret;
+  ret = SDL_RenderCopyEx(rend.get(), 
+                   p->get_tex(), 
+                   p->get_rect_src(), 
+                   p->get_rect_dst(), 
+                   p->get_angle(),
+                   NULL, SDL_FLIP_NONE);
+
+  if (ret < 0)
+    ret_err_SDL("Renderer copy! SDL_Error");
+}
+
+inline void SDL_wrapper::rend_clear(const std::shared_ptr<SDL_Renderer> rend)
+{
+  if (SDL_RenderClear(rend.get()) < 0)
+    ret_err_SDL("Renderer clear! SDL_Error");
 }

@@ -11,6 +11,9 @@ Game::Game()
 void 
 Game::init(void) 
 {
+  SDL_wrapper::init();
+  this->win = SDL_wrapper::creat_win(this->SCREEN_WIDTH, this->SCREEN_HEIGHT);
+  this->rend = SDL_wrapper::creat_rend(this->win);
 }
 
 void 
@@ -19,8 +22,7 @@ Game::kill(void)
   for (auto& p: this->players) {
     SDL_DestroyTexture(p->get_tex());
   }
-  SDL_DestroyRenderer(this->rend);
-  SDL_DestroyWindow(this->win);
+  
   SDL_Quit();
 }
 
@@ -44,14 +46,9 @@ void Game::proc_input(void)
           break;
       }
     }
-    SDL_RenderClear(this->rend);
+    SDL_wrapper::rend_clear(this->rend);
     for (auto& p: this->players) {
-      SDL_RenderCopyEx(this->rend, 
-                     p->get_tex(), 
-                     p->get_rect_src(), 
-                     p->get_rect_dst(), 
-                     p->get_angle(),
-                     NULL, SDL_FLIP_NONE);
+      SDL_wrapper::rend_copy_ex(this->rend, p);
     }
       
 
@@ -65,8 +62,8 @@ void Game::proc_input(void)
 void 
 Game::load_tex(std::shared_ptr<Player> player, 
                std::string path, 
-               SDL_Rect * src, 
-               SDL_Rect * dst)
+               std::shared_ptr<SDL_Rect> src, 
+               std::shared_ptr<SDL_Rect> dst)
 {
   player->set_surf(IMG_Load(path.c_str()));
   player->set_rect_dst(dst);
@@ -89,95 +86,6 @@ Game::load_tex(std::shared_ptr<Player> player,
     SDL_FreeSurface(player->get_surf());
     this->players.push_back(player);
   }
-}
-
-inline SDL_Texture *
-Player::get_tex(void)
-{
-  return this->texture;
-}
-
-inline SDL_Surface *
-Player::get_surf(void)
-{
-  return this->player_surf;
-}
-
-inline void
-Player::set_tex(SDL_Texture * tex)
-{
-  this->texture = tex;
-}
-
-inline void
-Player::set_surf(SDL_Surface * surf)
-{
-  this->player_surf = surf;
-}
-
-Player::Player() {
-  this->x = 640 / 2 - 8;
-  this->y = 480 / 2 - 8;
-}
-
-inline void 
-Player::set_x(double x) 
-{
-  this->x = x;
-}
-
-inline double
-Player::get_x(void) 
-{
-  return this->x;
-}
-
-inline void 
-Player::set_y(double y) 
-{
-  this->y = y;
-}
-
-inline double
-Player::get_y(void) 
-{
-  return this->x;
-}
-
-inline void 
-Player::set_angle(double a) 
-{
-  this->angle = a;
-}
-
-inline double
-Player::get_angle(void) 
-{
-  return this->angle;
-}
-
-inline void 
-Player::set_rect_src(SDL_Rect *rect) 
-{
-  this->src = rect;
-}
-
-inline void 
-Player::set_rect_dst(SDL_Rect *rect) 
-{
-  this->dst = rect;
-}
-
-inline SDL_Rect *
-Player::get_rect_dst(void) 
-{
-  return this->dst;
-}
-
-inline SDL_Rect *
-Player::get_rect_src(void) 
-{
-  return this->src;
 }
 
 inline SDL_Window *

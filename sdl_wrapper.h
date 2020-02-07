@@ -1,4 +1,5 @@
 #include "game.h"
+#include "player.h"
 
 static void SDL_DelRes(SDL_Window   *r) { SDL_DestroyWindow(r);   }
 static void SDL_DelRes(SDL_Renderer *r) { SDL_DestroyRenderer(r); }
@@ -12,14 +13,18 @@ std::shared_ptr<T> sdl_shared(T *t) {
 
 class SDL_wrapper
 {
-    inline SDL_wrapper(void) = default;
+    public:
+        inline SDL_wrapper(void) = default;
 
-    static void       init             (void);
-    std::shared_ptr<SDL_Window>       
-                      creat_win        (const int&, const int&);
-    std::shared_ptr<SDL_Renderer>       
-                      creat_rend       (const std::shared_ptr<SDL_Window>);
-    static void       draw_color       (const std::shared_ptr<SDL_Renderer>);
-    static void       rend_clear       (const std::shared_ptr<SDL_Renderer>);
-    static void       rend_copy_ex     (const std::shared_ptr<SDL_Renderer>);
+        static void       init             (void);
+        static std::shared_ptr<SDL_Window>       
+                          creat_win        (const int&, const int&);
+        static std::shared_ptr<SDL_Renderer>       
+                          creat_rend       (const std::shared_ptr<SDL_Window>);
+        static void       draw_color       (const std::shared_ptr<SDL_Renderer>);
+        static void       rend_clear       (const std::shared_ptr<SDL_Renderer>);
+        static void       rend_copy_ex     (const std::shared_ptr<SDL_Renderer>, 
+                                            const std::shared_ptr<Player>);
+        static inline void
+                          rend_clear       (const std::shared_ptr<SDL_Renderer>);
 }
