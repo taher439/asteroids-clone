@@ -18,6 +18,7 @@ class Player
     std::shared_ptr<SDL_Texture> texture;
     std::shared_ptr<SDL_Surface> player_surf;
     std::shared_ptr<SDL_Rect>    dst, src;
+    static constexpr double ship_thrust = 0.025;
 
   public:
     inline void           set_angle            (double a)
@@ -70,7 +71,13 @@ class Player
                             this->x = 640 / 2 - 8;
                             this->y = 480 / 2 - 8;
                           }
-                  
+    inline void           thrust               (double last_angle) {
+                            this->x += Player::ship_thrust * cos(last_angle);
+                            this->y -= Player::ship_thrust * sin(last_angle);
+
+                            this->dst->x = this->x;
+                            this->dst->y = this->y;
+                          }
 };
 
 #endif

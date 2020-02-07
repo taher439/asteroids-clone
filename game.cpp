@@ -26,6 +26,8 @@ void Game::proc_input(void)
 {
   double sprite_angle = 0;
   int x, y;
+  bool thrust = false;
+  double last_angle = 0;
 
   while(!this->quit) { 
     while(SDL_PollEvent(&this->ev) != 0) {       
@@ -33,15 +35,26 @@ void Game::proc_input(void)
         case SDL_QUIT:
           this->quit = true;
           break;
+
         case SDL_MOUSEMOTION:
+        {
           SDL_GetMouseState(&x, &y);
           int delta_x = main_player->get_x() - x;
           int delta_y = main_player->get_y() - y;
           sprite_angle = (atan2(delta_y, delta_x) * 180.0000) / PI;
           main_player->set_angle(sprite_angle);
           break;
+        }
+        case SDL_MOUSEBUTTONDOWN:
+          if (this->ev.button.button == SDL_BUTTON_LEFT) {
+            thrust = true;
+            last_angle = main_player->get_angle();
+          }
+          break;
       }
     }
+    if (thrust)
+      main_player->thrust(last_angle);
     SDL_wrapper::rend_clear(this->rend);
     for (auto& p: this->players) {
       SDL_wrapper::rend_copy_ex(this->rend, p);
