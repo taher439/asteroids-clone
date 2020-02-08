@@ -11,6 +11,14 @@
 #include <memory>
 #include <cmath>
 #define PI 3.14159265
+#ifdef AZERTY
+  #define LEFT SDLK_q
+  #define RIGHT SDLK_d
+#else
+  #define LEFT SDLK_a
+  #define RIGHT SDLK_d
+#endif
+
 class Player;
 class SDL_wrapper;
 
@@ -24,7 +32,7 @@ class Game
     SDL_Event ev;
     std::vector<std::shared_ptr<Player>> players;
     std::shared_ptr<Player> main_player;
-
+    
     enum state {
       MENU,
       GAME,
@@ -44,7 +52,6 @@ class Game
                                                 std::shared_ptr<SDL_Rect>);
 
     void                  kill                 (void);
-    void                  proc_input           (void);
     void                  init                 (void);
     inline void           set_win              (std::shared_ptr<SDL_Window>);
     inline void           set_surf             (std::shared_ptr<SDL_Surface>);
@@ -68,5 +75,6 @@ class Game
                            {return this->main_player;}
     inline void          set_main_player       (std::shared_ptr<Player> p)
                            {this->main_player = p;}
+    void                 proc_input            (void);
 };
 #endif 

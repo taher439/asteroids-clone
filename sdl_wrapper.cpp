@@ -39,18 +39,10 @@ std::shared_ptr<SDL_Renderer>
 SDL_wrapper::creat_rend(const std::shared_ptr<SDL_Window> win) 
 {
   std::shared_ptr<SDL_Renderer> rend = 
-    sdl_shared(SDL_CreateRenderer(win.get(), -1, SDL_RENDERER_ACCELERATED));
+    sdl_shared(SDL_CreateRenderer(win.get(), -1, 0));
   
   if (rend == nullptr) 
     ret_err_SDL("Renderer could not be created! SDL_Error");
-  
-  SDL_SetRenderDrawColor(rend.get(), 0xff, 0xff, 0xff, 0xff);
-  int imgFlags = IMG_INIT_PNG;
-  if(!(IMG_Init(imgFlags) & imgFlags))
-    std::cerr 
-      << "SDL_image could not initialize! SDL_image Error: " 
-      << IMG_GetError() 
-      << std::endl;
   return rend;
 }
 
@@ -75,4 +67,24 @@ SDL_wrapper::rend_clear(const std::shared_ptr<SDL_Renderer> rend)
 {
   if (SDL_RenderClear(rend.get()) < 0)
     ret_err_SDL("Renderer clear! SDL_Error");
+}
+
+void
+SDL_wrapper::draw_line(const std::shared_ptr<SDL_Renderer> rend,
+          int   x1,
+          int   y1,
+          int   x2,
+          int   y2)
+{
+  SDL_SetRenderDrawColor(rend.get(), 255, 255, 255, 255);
+  SDL_RenderDrawLine(rend.get(), x1, y1, x2, y2);
+}
+
+void
+SDL_wrapper::fill_screen(const std::shared_ptr<SDL_Window> win) 
+{
+  SDL_Surface *surface = SDL_GetWindowSurface(win.get());
+  Uint32 skyblue=SDL_MapRGB(surface->format, 65,193,193);
+  SDL_FillRect(surface, NULL, skyblue);
+  SDL_UpdateWindowSurface(win.get());
 }

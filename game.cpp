@@ -25,41 +25,70 @@ Game::kill(void)
 void Game::proc_input(void) 
 {
   double sprite_angle = 0;
-  int x, y;
   bool thrust = false;
-  double last_angle = 0;
 
+  const int FPS = 60;
+  const int frame_delay = 1000/FPS;
+  Uint32 frame_start;
+  int frame_time;
+  
   while(!this->quit) { 
+    frame_start = SDL_GetTicks();
+
     while(SDL_PollEvent(&this->ev) != 0) {       
       switch(this->ev.type) {
         case SDL_QUIT:
           this->quit = true;
           break;
 
-        case SDL_MOUSEMOTION:
+        case SDL_KEYDOWN:
         {
-          SDL_GetMouseState(&x, &y);
-          int delta_x = main_player->get_x() - x;
-          int delta_y = main_player->get_y() - y;
-          sprite_angle = (atan2(delta_y, delta_x) * 180.0000) / PI;
-          main_player->set_angle(sprite_angle);
+          if (this->ev.key.keysym.sym == LEFT)
+            sprite_angle = (-360 / 180.0000) * PI / FPS;
+           if (this->ev.key.keysym.sym == RIGHT)
+            sprite_angle = (360 / 180.0000) * PI / FPS;
           break;
         }
-        case SDL_MOUSEBUTTONDOWN:
-          if (this->ev.button.button == SDL_BUTTON_LEFT) {
-            thrust = true;
-            last_angle = main_player->get_angle();
-          }
+
+        case SDL_KEYUP: {
+          if (this->ev.key.keysym.sym == LEFT || this->ev.key.keysym.sym == RIGHT)
+            sprite_angle = 0;
           break;
+        }
+        
+        case SDL_MOUSEBUTTONDOWN:
+        {
+          if (this->ev.button.button == SDL_BUTTON_LEFT)
+            thrust = true;
+          break;
+        }
+
+        case SDL_MOUSEBUTTONUP:
+        {
+          if (this->ev.button.button == SDL_BUTTON_LEFT)
+            thrust = false;
+          break;
+        }
       }
     }
+    
+    main_player->set_angle(main_player->get_angle() + sprite_angle);
+    
     if (thrust)
-      main_player->thrust(last_angle);
-    SDL_wrapper::rend_clear(this->rend);
-    for (auto& p: this->players) {
-      SDL_wrapper::rend_copy_ex(this->rend, p);
-    }
-    SDL_RenderPresent(this->rend.get());
+      main_player->thrust(main_player->get_angle());
+    else
+      main_player->slow_ship();
+
+    main_player->wrap_ship();
+    main_player->move_ship();
+    SDL_SetRenderDrawColor(rend.get(), 0, 0, 0, 255);
+    SDL_RenderClear(rend.get());
+      main_player->draw_ship(this->rend);
+    SDL_RenderPresent(rend.get());
+  
+    frame_time = SDL_GetTicks() - frame_start;
+    if (frame_delay > frame_time) 
+      SDL_Delay(frame_delay - frame_time);
   }
   
   if (this->quit)

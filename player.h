@@ -10,15 +10,20 @@
 #include <zlib.h>
 #include <png.h>
 #include <cmath>
+#include "game.h"
 
 class Player 
 {
   private:
-    double x, y, angle;
+    double x, y, angle = 90 / 180 * PI;
+    const int SCREEN_WIDTH = 640;
+    const int SCREEN_HEIGHT = 480;
+
     std::shared_ptr<SDL_Texture> texture;
     std::shared_ptr<SDL_Surface> player_surf;
     std::shared_ptr<SDL_Rect>    dst, src;
-    static constexpr double ship_thrust = 0.025;
+    static constexpr double ship_thrust = 5;
+    double thrust_x, thrust_y;
 
   public:
     inline void           set_angle            (double a)
@@ -71,13 +76,37 @@ class Player
                             this->x = 640 / 2 - 8;
                             this->y = 480 / 2 - 8;
                           }
+                          
     inline void           thrust               (double last_angle) {
-                            this->x += Player::ship_thrust * cos(last_angle);
-                            this->y -= Player::ship_thrust * sin(last_angle);
+                            this->thrust_x += Player::ship_thrust * sin(last_angle) / 60;
+                            this->thrust_y -= Player::ship_thrust * cos(last_angle) / 60;
+                          }
 
+    inline void           move_ship            (void) {
+                            this->x += this->thrust_x;
+                            this->y += this->thrust_y;
                             this->dst->x = this->x;
                             this->dst->y = this->y;
-                          }
+    }
+
+    inline void           slow_ship            (void) {
+                            this->thrust_x -= 0.005 * this->thrust_x;
+                            this->thrust_y -= 0.005 * this->thrust_y;
+    }
+
+    inline void           wrap_ship            (void) {
+                            if (this->x > this->SCREEN_WIDTH) 
+                              this->x = 0;
+                            if (this->x < 0) 
+                              this->x = this->SCREEN_WIDTH;
+                            
+                            if (this->y > this->SCREEN_HEIGHT) 
+                              this->y = 0;
+                            if (this->y < 0) 
+                              this->y = this->SCREEN_HEIGHT;
+    }
+
+    void                 draw_ship            (std::shared_ptr<SDL_Renderer>);
 };
 
 #endif

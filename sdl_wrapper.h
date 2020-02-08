@@ -12,6 +12,7 @@
 #include <png.h>
 #include <memory>
 #include <cmath>
+#include <array>
 class Player;
 
 [[maybe_unused]] static void SDL_DelRes(SDL_Window *r) {SDL_DestroyWindow(r);}
@@ -38,6 +39,16 @@ class SDL_wrapper
         static void       rend_copy_ex     (const std::shared_ptr<SDL_Renderer>, 
                                             const std::shared_ptr<Player>);
         static void       rend_clear       (const std::shared_ptr<SDL_Renderer>);
+        static void       draw_line        (const std::shared_ptr<SDL_Renderer>,
+                                            int   x1,
+                                            int   y1,
+                                            int   x2,
+                                            int   y2);
+
+        static void       draw_lines       (const std::shared_ptr<SDL_Renderer>,
+                                            const std::vector<SDL_Point>);
+
+        static void       fill_screen      (const std::shared_ptr<SDL_Window>);
 };
 
 #endif
