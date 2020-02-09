@@ -108,7 +108,8 @@ class Player
                               this->y = this->SCREEN_HEIGHT;
                           }
 
-    void                 draw_ship            (std::shared_ptr<SDL_Renderer>);
+    void                 draw_ship            (std::shared_ptr<SDL_Renderer>,
+                                               const bool&);
 };
 
 #endif

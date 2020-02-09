@@ -4,8 +4,8 @@
 
 Game::Game() 
 {
-  this->win = NULL;
-  this->surf = NULL;
+  this->win = nullptr;
+  this->surf = nullptr;
 }
 
 void 
@@ -22,68 +22,78 @@ Game::kill(void)
   SDL_Quit();
 }
 
-void Game::proc_input(void) 
+static void 
+handle_event(const SDL_Event& ev, 
+             double& sprite_angle, 
+             bool& thrust, 
+             bool& quit, 
+             const int& FPS) 
 {
-  double sprite_angle = 0;
-  bool thrust = false;
-
-  const int FPS = 60;
-  const int frame_delay = 1000/FPS;
-  Uint32 frame_start;
-  int frame_time;
-  
-  while(!this->quit) { 
-    frame_start = SDL_GetTicks();
-
-    while(SDL_PollEvent(&this->ev) != 0) {       
-      switch(this->ev.type) {
+  switch(ev.type) {
         case SDL_QUIT:
-          this->quit = true;
+          quit = true;
           break;
 
         case SDL_KEYDOWN:
         {
-          if (this->ev.key.keysym.sym == LEFT)
-            sprite_angle = (-360 / 180.0000) * PI / FPS;
-           if (this->ev.key.keysym.sym == RIGHT)
-            sprite_angle = (360 / 180.0000) * PI / FPS;
+          if (ev.key.keysym.sym == LEFT)
+            sprite_angle = (-360.0000 / 180.0000) * PI / FPS;
+          if (ev.key.keysym.sym == RIGHT)
+            sprite_angle = (360.0000  / 180.0000) * PI / FPS;
           break;
         }
 
         case SDL_KEYUP: {
-          if (this->ev.key.keysym.sym == LEFT || this->ev.key.keysym.sym == RIGHT)
+          if (ev.key.keysym.sym == LEFT || 
+              ev.key.keysym.sym == RIGHT)
             sprite_angle = 0;
           break;
         }
         
         case SDL_MOUSEBUTTONDOWN:
         {
-          if (this->ev.button.button == SDL_BUTTON_LEFT)
+          if (ev.button.button == SDL_BUTTON_LEFT)
             thrust = true;
           break;
         }
 
         case SDL_MOUSEBUTTONUP:
         {
-          if (this->ev.button.button == SDL_BUTTON_LEFT)
+          if (ev.button.button == SDL_BUTTON_LEFT)
             thrust = false;
           break;
         }
-      }
-    }
-    
+   }
+}
+
+void 
+Game::proc_input(void) 
+{
+  double sprite_angle = 0;
+  bool thrust = false;
+
+  const int FPS = 60;
+  const int frame_delay = 1000 / FPS;
+  Uint32 frame_start;
+  int frame_time;
+  
+  while(!this->quit) { 
+    frame_start = SDL_GetTicks();
+
+    while(SDL_PollEvent(&this->ev) != 0)
+      handle_event(this->ev, sprite_angle, thrust, quit, FPS);
+
     main_player->set_angle(main_player->get_angle() + sprite_angle);
-    
     if (thrust)
       main_player->thrust(main_player->get_angle());
     else
       main_player->slow_ship();
-
     main_player->wrap_ship();
     main_player->move_ship();
+
     SDL_SetRenderDrawColor(rend.get(), 0, 0, 0, 255);
     SDL_RenderClear(rend.get());
-      main_player->draw_ship(this->rend);
+      main_player->draw_ship(this->rend, thrust);
     SDL_RenderPresent(rend.get());
   
     frame_time = SDL_GetTicks() - frame_start;
