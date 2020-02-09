@@ -56,6 +56,7 @@ class Game
     inline void           set_win              (std::shared_ptr<SDL_Window>);
     inline void           set_surf             (std::shared_ptr<SDL_Surface>);
     inline void           set_rend             (std::shared_ptr<SDL_Renderer>);
+
     inline std::shared_ptr<SDL_Renderer> 
                           get_rend             (void)
                             {return this->rend;}
@@ -73,8 +74,13 @@ class Game
     inline std::shared_ptr<Player> 
                          get_main_player       (void)
                            {return this->main_player;}
+
     inline void          set_main_player       (std::shared_ptr<Player> p)
-                           {this->main_player = p;}
+                           {
+                             this->main_player = p;
+                             this->players.push_back(p);
+                           }
+                           
     void                 proc_input            (void);
 };
 #endif 

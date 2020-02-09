@@ -15,14 +15,14 @@
 class Player 
 {
   private:
-    double x, y, angle = 90 / 180 * PI;
-    const int SCREEN_WIDTH = 640;
+    double x, y, angle      = 90 / 180 * PI;
+    const int SCREEN_WIDTH  = 640;
     const int SCREEN_HEIGHT = 480;
 
     std::shared_ptr<SDL_Texture> texture;
     std::shared_ptr<SDL_Surface> player_surf;
     std::shared_ptr<SDL_Rect>    dst, src;
-    static constexpr double ship_thrust = 5;
+    static constexpr double      ship_thrust = 5;
     double thrust_x, thrust_y;
 
   public:
@@ -72,7 +72,8 @@ class Player
     inline double         get_y                (void)
                             {return this->y;}
 
-                          Player               (void) {
+                          Player               (void) 
+                          {
                             this->x = 640 / 2 - 8;
                             this->y = 480 / 2 - 8;
                           }
@@ -82,19 +83,20 @@ class Player
                             this->thrust_y -= Player::ship_thrust * cos(last_angle) / 60;
                           }
 
-    inline void           move_ship            (void) {
+    inline void           move_ship            (void) 
+                          {
                             this->x += this->thrust_x;
                             this->y += this->thrust_y;
-                            this->dst->x = this->x;
-                            this->dst->y = this->y;
-    }
+                          }
 
-    inline void           slow_ship            (void) {
+    inline void           slow_ship            (void) 
+                          {
                             this->thrust_x -= 0.005 * this->thrust_x;
                             this->thrust_y -= 0.005 * this->thrust_y;
-    }
+                          }
 
-    inline void           wrap_ship            (void) {
+    inline void           wrap_ship            (void) 
+                          {
                             if (this->x > this->SCREEN_WIDTH) 
                               this->x = 0;
                             if (this->x < 0) 
@@ -104,7 +106,7 @@ class Player
                               this->y = 0;
                             if (this->y < 0) 
                               this->y = this->SCREEN_HEIGHT;
-    }
+                          }
 
     void                 draw_ship            (std::shared_ptr<SDL_Renderer>);
 };
