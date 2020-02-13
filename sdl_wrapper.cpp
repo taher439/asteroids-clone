@@ -71,10 +71,10 @@ SDL_wrapper::rend_clear(const std::shared_ptr<SDL_Renderer> rend)
 
 void
 SDL_wrapper::draw_line(const std::shared_ptr<SDL_Renderer> rend,
-          int   x1,
-          int   y1,
-          int   x2,
-          int   y2)
+        const  int&   x1,
+        const  int&   y1,
+        const  int&   x2,
+        const  int&   y2)
 {
   SDL_SetRenderDrawColor(rend.get(), 255, 255, 255, 255);
   SDL_RenderDrawLine(rend.get(), x1, y1, x2, y2);

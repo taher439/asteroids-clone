@@ -19,8 +19,11 @@
   #define RIGHT SDLK_d
 #endif
 
+struct point {
+  double x, y;
+};
+
 class Player;
-class SDL_wrapper;
 
 class Game 
 {
@@ -42,7 +45,7 @@ class Game
     state current_state;
     
   public:
-    const int SCREEN_WIDTH = 640;
+    const int SCREEN_WIDTH  = 640;
     const int SCREEN_HEIGHT = 480;
     bool quit = false;
     

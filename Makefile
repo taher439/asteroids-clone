@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS= -W -Wall -Wextra -O2 -g -D AZERTY
+CFLAGS= -W -Wall -Wextra -O2 -g -D AZERTY -std=c++17
 LIBS=-lSDL2 -lSDL2_image
 
 SRC=$(wildcard *.cpp)

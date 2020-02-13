@@ -33,32 +33,25 @@ handle_event(const SDL_Event& ev,
         case SDL_QUIT:
           quit = true;
           break;
-
-        case SDL_KEYDOWN:
-        {
+        case SDL_KEYDOWN: {
           if (ev.key.keysym.sym == LEFT)
             sprite_angle = (-360.0000 / 180.0000) * PI / FPS;
           if (ev.key.keysym.sym == RIGHT)
             sprite_angle = (360.0000  / 180.0000) * PI / FPS;
           break;
         }
-
         case SDL_KEYUP: {
           if (ev.key.keysym.sym == LEFT || 
               ev.key.keysym.sym == RIGHT)
             sprite_angle = 0;
           break;
         }
-        
-        case SDL_MOUSEBUTTONDOWN:
-        {
+        case SDL_MOUSEBUTTONDOWN: {
           if (ev.button.button == SDL_BUTTON_LEFT)
             thrust = true;
           break;
         }
-
-        case SDL_MOUSEBUTTONUP:
-        {
+        case SDL_MOUSEBUTTONUP: {
           if (ev.button.button == SDL_BUTTON_LEFT)
             thrust = false;
           break;
@@ -69,17 +62,16 @@ handle_event(const SDL_Event& ev,
 void 
 Game::proc_input(void) 
 {
-  double sprite_angle = 0;
-  bool thrust = false;
+  double    sprite_angle = 0;
+  bool      thrust = false;
 
   const int FPS = 60;
   const int frame_delay = 1000 / FPS;
-  Uint32 frame_start;
-  int frame_time;
+  Uint32    frame_start;
+        int frame_time;
   
   while(!this->quit) { 
     frame_start = SDL_GetTicks();
-
     while(SDL_PollEvent(&this->ev) != 0)
       handle_event(this->ev, sprite_angle, thrust, quit, FPS);
 
@@ -96,6 +88,7 @@ Game::proc_input(void)
       main_player->draw_ship(this->rend, thrust);
     SDL_RenderPresent(rend.get());
   
+    //framerate limit
     frame_time = SDL_GetTicks() - frame_start;
     if (frame_delay > frame_time) 
       SDL_Delay(frame_delay - frame_time);
