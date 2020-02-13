@@ -99,15 +99,14 @@ Game::proc_input(void)
 }
 
 void 
-Game::load_tex(std::shared_ptr<Player> player, 
-               std::string path, 
-               std::shared_ptr<SDL_Rect> src, 
-               std::shared_ptr<SDL_Rect> dst)
+Game::load_tex(const std::shared_ptr<Player>& player, 
+               const std::string& path, 
+                     std::shared_ptr<SDL_Rect>&& src, 
+                     std::shared_ptr<SDL_Rect>&& dst)
 {
-  auto tmp_surf = sdl_shared(IMG_Load(path.c_str()));
-  player->set_surf(tmp_surf);
-  player->set_rect_dst(dst);
-  player->set_rect_src(src);
+  player->set_surf(sdl_shared(IMG_Load(path.c_str())));
+  player->set_rect_dst(std::move(dst));
+  player->set_rect_src(std::move(src));
   if(player->get_surf() == NULL)
     std::cerr 
          << "Unable to load image, SDL_image Error " 
@@ -116,11 +115,9 @@ Game::load_tex(std::shared_ptr<Player> player,
          << std::endl;
   else
   {
-    auto tmp_tex = sdl_shared(SDL_CreateTextureFromSurface(
+    player->set_tex(sdl_shared(SDL_CreateTextureFromSurface(
                                 this->rend.get(), 
-                                player->get_surf().get()));
-
-    player->set_tex(tmp_tex);
+                                player->get_surf().get())));
     if (player->get_tex() == NULL)
       std::cerr 
            << "Unable to create texture from %s! SDL Error: "

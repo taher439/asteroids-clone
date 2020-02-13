@@ -12,14 +12,14 @@ class Asteroid
       tiny
     };
 
-    double x, y;
+    point center;
     std::vector<point> points;
     size current_size;
 
   public:
     void draw_asteroid         (void);
     void split_asteroid        (void);
-    void detect_collision_ship (std::shared_ptr<Player>);
+    void detect_collision_ship (const std::shared_ptr<Player>&);
          Asteroid              (void);
 };
 #endif 

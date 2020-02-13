@@ -17,23 +17,25 @@ class Player
     int lives = 3, score = 0;
 
   public:
-    inline void           set_angle            (double a)
+    inline void           set_angle            (double&& a)
                             {this->angle = std::move(a);}
 
     inline point         get_center            (void)
                             {return this->center;}
-    inline void          set_center            (point c)
+
+    inline void          set_center            (point&& c)
                             {this->center = std::move(c);}
-    inline void           set_surf             (std::shared_ptr<SDL_Surface> s)
+
+    inline void           set_surf             (std::shared_ptr<SDL_Surface>&& s)
                             {this->player_surf = std::move(s);}
 
-    inline void           set_tex              (std::shared_ptr<SDL_Texture> t)
+    inline void           set_tex              (std::shared_ptr<SDL_Texture>&& t)
                             {this->texture = std::move(t);}
 
-    inline void           set_rect_src         (std::shared_ptr<SDL_Rect> src)
+    inline void           set_rect_src         (std::shared_ptr<SDL_Rect>&& src)
                             {this->src = std::move(src);}
 
-    inline void           set_rect_dst         (std::shared_ptr<SDL_Rect> dst)
+    inline void           set_rect_dst         (std::shared_ptr<SDL_Rect>&& dst)
                             {this->dst = std::move(dst);}
 
     inline std::shared_ptr<SDL_Surface>
@@ -57,7 +59,7 @@ class Player
 
                           Player               (void) 
                           {
-                            this->center.x = 640 / 2 - 8;
+                            this->center.x = 640 / 2 - 8; //fix this
                             this->center.y = 480 / 2 - 8;
                           }
                           
@@ -93,7 +95,7 @@ class Player
                               this->center.y = this->SCREEN_HEIGHT;
                           }
 
-    void                 draw_ship            (std::shared_ptr<SDL_Renderer>,
+    void                 draw_ship            (const std::shared_ptr<SDL_Renderer>&,
                                                const bool&);
 };
 

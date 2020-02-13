@@ -36,7 +36,7 @@ SDL_wrapper::creat_win(const int& width, const int& height)
 }
 
 std::shared_ptr<SDL_Renderer>       
-SDL_wrapper::creat_rend(const std::shared_ptr<SDL_Window> win) 
+SDL_wrapper::creat_rend(const std::shared_ptr<SDL_Window>& win) 
 {
   std::shared_ptr<SDL_Renderer> rend = 
     sdl_shared(SDL_CreateRenderer(win.get(), -1, 0));
@@ -47,8 +47,8 @@ SDL_wrapper::creat_rend(const std::shared_ptr<SDL_Window> win)
 }
 
 void 
-SDL_wrapper::rend_copy_ex(const std::shared_ptr<SDL_Renderer> rend, 
-                          const std::shared_ptr<Player> p) 
+SDL_wrapper::rend_copy_ex(const std::shared_ptr<SDL_Renderer>& rend, 
+                          const std::shared_ptr<Player>& p) 
 {
   int ret;
   ret = SDL_RenderCopyEx(rend.get(), 
@@ -63,14 +63,14 @@ SDL_wrapper::rend_copy_ex(const std::shared_ptr<SDL_Renderer> rend,
 }
 
 void 
-SDL_wrapper::rend_clear(const std::shared_ptr<SDL_Renderer> rend)
+SDL_wrapper::rend_clear(const std::shared_ptr<SDL_Renderer>& rend)
 {
   if (SDL_RenderClear(rend.get()) < 0)
     ret_err_SDL("Renderer clear! SDL_Error");
 }
 
 void
-SDL_wrapper::draw_line(const std::shared_ptr<SDL_Renderer> rend,
+SDL_wrapper::draw_line(const std::shared_ptr<SDL_Renderer>& rend,
         const  int&   x1,
         const  int&   y1,
         const  int&   x2,
@@ -81,7 +81,7 @@ SDL_wrapper::draw_line(const std::shared_ptr<SDL_Renderer> rend,
 }
 
 void
-SDL_wrapper::fill_screen(const std::shared_ptr<SDL_Window> win) 
+SDL_wrapper::fill_screen(const std::shared_ptr<SDL_Window>& win) 
 {
   SDL_Surface *surface = SDL_GetWindowSurface(win.get());
   Uint32 skyblue=SDL_MapRGB(surface->format, 65,193,193);

@@ -2,7 +2,7 @@
 #include "sdl_wrapper.h"
 
 void 
-Player::draw_ship(std::shared_ptr<SDL_Renderer> rend, const bool& thrusting)
+Player::draw_ship(const std::shared_ptr<SDL_Renderer>& rend, const bool& thrusting)
 {
     SDL_wrapper::draw_line(
         rend, 

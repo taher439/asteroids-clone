@@ -25,21 +25,21 @@ class SDL_wrapper
         static std::shared_ptr<SDL_Window>       
                           creat_win        (const int&, const int&);
         static std::shared_ptr<SDL_Renderer>       
-                          creat_rend       (const std::shared_ptr<SDL_Window>);
-        static void       draw_color       (const std::shared_ptr<SDL_Renderer>);
-        static void       rend_copy_ex     (const std::shared_ptr<SDL_Renderer>, 
-                                            const std::shared_ptr<Player>);
-        static void       rend_clear       (const std::shared_ptr<SDL_Renderer>);
-        static void       draw_line        (const std::shared_ptr<SDL_Renderer>,
+                          creat_rend       (const std::shared_ptr<SDL_Window>&);
+        static void       draw_color       (const std::shared_ptr<SDL_Renderer>&);
+        static void       rend_copy_ex     (const std::shared_ptr<SDL_Renderer>&, 
+                                            const std::shared_ptr<Player>&);
+        static void       rend_clear       (const std::shared_ptr<SDL_Renderer>&);
+        static void       draw_line        (const std::shared_ptr<SDL_Renderer>&,
                                             const int&,
                                             const int&,
                                             const int&,
                                             const int&);
 
-        static void       draw_lines       (const std::shared_ptr<SDL_Renderer>,
-                                            const std::vector<SDL_Point>);
+        static void       draw_lines       (const std::shared_ptr<SDL_Renderer>&,
+                                            const std::vector<SDL_Point>&);
 
-        static void       fill_screen      (const std::shared_ptr<SDL_Window>);
+        static void       fill_screen      (const std::shared_ptr<SDL_Window>&);
 };
 
 #endif

@@ -9,6 +9,7 @@
 #include <zlib.h>
 #include <png.h>
 #include <memory>
+#include <type_traits>
 #include <cmath>
 #define PI 3.14159265
 #ifdef AZERTY
@@ -23,7 +24,44 @@ struct point {
   double x, y;
 };
 
+template <typename T>
+class Vec2
+{
+  T _x, _y;
+  static_assert(std::is_arithmetic_v<T>);
+
+  public:
+    Vec2 (T x, T y) : _x(x), _y(y) {}
+    
+    void print()
+    {
+      std::cout << x << " " << y << std::endl;
+    }
+
+};
+
 class Player;
+class Asteroid;
+template <typename T, typename = void>
+class Rand_gen;
+
+template <typename T>
+class Rand_gen <T, std::enable_if_t<std::is_floating_point_v<T>>>
+{
+  public:
+     static T rand_num(const T& min, const T& max) {
+      
+    }
+};
+
+template <typename T>
+class Rand_gen <T, std::enable_if_t<std::is_integral_v<T>>>
+{
+  public:
+     static T rand_num(const T& min, const T& max) {
+      
+    }
+};
 
 class Game 
 {
@@ -49,16 +87,16 @@ class Game
     const int SCREEN_HEIGHT = 480;
     bool quit = false;
     
-    void                  load_tex             (std::shared_ptr<Player>,
-                                                std::string, 
-                                                std::shared_ptr<SDL_Rect>, 
-                                                std::shared_ptr<SDL_Rect>);
+    void                  load_tex             (const std::shared_ptr<Player>&,
+                                                const std::string&, 
+                                                std::shared_ptr<SDL_Rect>&&, 
+                                                std::shared_ptr<SDL_Rect>&&);
 
     void                  kill                 (void);
     void                  init                 (void);
-    inline void           set_win              (std::shared_ptr<SDL_Window>);
-    inline void           set_surf             (std::shared_ptr<SDL_Surface>);
-    inline void           set_rend             (std::shared_ptr<SDL_Renderer>);
+    inline void           set_win              (std::shared_ptr<SDL_Window>&&);
+    inline void           set_surf             (std::shared_ptr<SDL_Surface>&&);
+    inline void           set_rend             (std::shared_ptr<SDL_Renderer>&&);
 
     inline std::shared_ptr<SDL_Renderer> 
                           get_rend             (void)
@@ -78,10 +116,10 @@ class Game
                          get_main_player       (void)
                            {return this->main_player;}
 
-    inline void          set_main_player       (std::shared_ptr<Player> p)
+    inline void          set_main_player       (std::shared_ptr<Player>&& p)
                            {
-                             this->main_player = p;
-                             this->players.push_back(p);
+                             this->main_player = std::move(p);
+                             this->players.push_back(this->main_player);
                            }
                            
     void                 proc_input            (void);
