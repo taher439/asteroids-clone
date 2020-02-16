@@ -5,7 +5,7 @@
 class Player 
 {
   private:
-    point center;
+    Vec2<int> center;
     double angle = 90 / 180 * PI;
     const int SCREEN_WIDTH  = 640;
     const int SCREEN_HEIGHT = 480;
@@ -20,10 +20,10 @@ class Player
     inline void           set_angle            (double&& a)
                             {this->angle = std::move(a);}
 
-    inline point         get_center            (void)
+    inline Vec2<int>      get_center            (void)
                             {return this->center;}
 
-    inline void          set_center            (point&& c)
+    inline void          set_center            (Vec2<int>&& c)
                             {this->center = std::move(c);}
 
     inline void           set_surf             (std::shared_ptr<SDL_Surface>&& s)
@@ -59,8 +59,7 @@ class Player
 
                           Player               (void) 
                           {
-                            this->center.x = 640 / 2 - 8; //fix this
-                            this->center.y = 480 / 2 - 8;
+                            this->center = Vec2<int>(640 / 2 - 8, 480 / 2 - 8);
                           }
                           
     inline void           thrust               (const double& last_angle) {

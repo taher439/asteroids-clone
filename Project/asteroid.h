@@ -12,8 +12,8 @@ class Asteroid
       tiny
     };
 
-    point center;
-    std::vector<point> points;
+    Vec2<int> center;
+    std::vector<Vec2<int>> points;
     size current_size;
 
   public:

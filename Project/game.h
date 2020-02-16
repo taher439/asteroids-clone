@@ -19,29 +19,32 @@
   #define LEFT SDLK_a
   #define RIGHT SDLK_d
 #endif
-
-struct point {
-  double x, y;
-};
+class Player;
+class Asteroid;
 
 template <typename T>
-class Vec2
-{
-  T _x, _y;
+class Vec2 {
   static_assert(std::is_arithmetic_v<T>);
 
   public:
-    Vec2 (T x, T y) : _x(x), _y(y) {}
+    T x, y;
+    Vec2() : x(0), y(0) {}
+    Vec2(const T& _x, const T& _y) : x(_x), y(_y) {}
     
-    void print()
-    {
-      std::cout << _x << " " << _y << std::endl;
+    inline Vec2 operator+(const Vec2& v) {
+      return Vec2(this->x + v.x, this->y + v.y);
+    }
+
+    inline Vec2 operator*(const T& val) {
+      return Vec2(this->x * val, this->y * val);
+    }
+
+    void print() {
+      std::cout << this->x << " " << this->y << std::endl;
     }
 
 };
 
-class Player;
-class Asteroid;
 template <typename T, typename = void>
 class Rand_gen;
 

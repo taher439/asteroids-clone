@@ -5,7 +5,7 @@ add_subdirectory(SDL2)
 
 project(Asteroids LANGUAGES CXX)
 
-file(GLOB SRC_FILES Projet/*.h Projet/*.cpp)
+file(GLOB SRC_FILES Project/*.h Project/*.cpp)
 
 # convenient function for easy compilation
 # usage: compilation(EXEC nom_executable SRC files sources .cpp & .h USE_SDL)
@@ -23,4 +23,4 @@ function(COMPILATION)
     endif()
 endfunction()
 
-compilation(EXEC main SRC ${SRC_FILES}  USE_SDL)
+compilation(EXEC main SRC ${SRC_FILES} USE_SDL)
