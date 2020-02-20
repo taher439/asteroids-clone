@@ -11,6 +11,7 @@
 #include <memory>
 #include <type_traits>
 #include <cmath>
+#include <random>
 #define PI 3.14159265
 #ifdef AZERTY
   #define LEFT SDLK_q
@@ -25,7 +26,6 @@ class Asteroid;
 template <typename T>
 class Vec2 {
   static_assert(std::is_arithmetic_v<T>);
-
   public:
     T x, y;
     Vec2() : x(0), y(0) {}
@@ -42,7 +42,6 @@ class Vec2 {
     void print() {
       std::cout << this->x << " " << this->y << std::endl;
     }
-
 };
 
 template <typename T, typename = void>
@@ -52,8 +51,11 @@ template <typename T>
 class Rand_gen <T, std::enable_if_t<std::is_floating_point_v<T>>>
 {
   public:
-     static T rand_num(const T& min, const T& max) {
-      
+    static T rand_real(const T& min, const T& max) {
+      std::random_device rd;
+      std::mt19937 gen(rd());
+      std::uniform_real_distribution<T> distribution(min, max);
+      return distribution(gen);
     }
 };
 
@@ -61,8 +63,11 @@ template <typename T>
 class Rand_gen <T, std::enable_if_t<std::is_integral_v<T>>>
 {
   public:
-     static T rand_num(const T& min, const T& max) {
-      
+    static T rand_int(const T& min, const T& max) {
+      std::random_device rd;
+      std::mt19937 gen(rd());
+      std::uniform_int_distribution<T> distribution(min, max);
+      return distribution(gen);
     }
 };
 

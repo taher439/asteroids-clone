@@ -9,9 +9,11 @@ class Player
     double angle = 90 / 180 * PI;
     const int SCREEN_WIDTH  = 640;
     const int SCREEN_HEIGHT = 480;
+
     std::shared_ptr<SDL_Texture> texture;
     std::shared_ptr<SDL_Surface> player_surf;
     std::shared_ptr<SDL_Rect>    dst, src;
+    
     static constexpr double      ship_thrust = 5;
     double thrust_x, thrust_y;
     int lives = 3, score = 0;
