@@ -2,12 +2,6 @@
 #include "game.h"
 #include "sdl_wrapper.h"
 
-Game::Game() 
-{
-  this->win = nullptr;
-  this->surf = nullptr;
-}
-
 void 
 Game::init(void) 
 {

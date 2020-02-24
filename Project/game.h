@@ -12,6 +12,7 @@
 #include <type_traits>
 #include <cmath>
 #include <random>
+
 #define PI 3.14159265
 #ifdef AZERTY
   #define LEFT SDLK_q
@@ -28,19 +29,57 @@ class Vec2 {
   static_assert(std::is_arithmetic_v<T>);
   public:
     T x, y;
-    Vec2() : x(0), y(0) {}
-    Vec2(const T& _x, const T& _y) : x(_x), y(_y) {}
-    
-    inline Vec2 operator+(const Vec2& v) {
+    Vec2(): x(0), y(0) {}
+    Vec2(const T& _x, const T& _y): x(_x), y(_y) {}
+    Vec2(const Vec2<T>& v): x(v.x), y(v.y) {}
+    inline Vec2<T> operator+(const Vec2& v) const {
       return Vec2(this->x + v.x, this->y + v.y);
     }
 
-    inline Vec2 operator*(const T& val) {
+    inline Vec2<T> operator*(const T& val) const {
       return Vec2(this->x * val, this->y * val);
     }
 
+    inline Vec2<T>& operator += (const Vec2<T>& v) {
+      x += v.x;
+      y += v.y;
+      return *this;
+    }
+
+    inline Vec2<T>& operator += (const T& val) {
+      x += val;
+      y += val;
+      return *this;
+    }
+
+    inline Vec2<T>& operator -= (const Vec2<T>& v){
+      x -= v.x;
+      y -= v.y;
+      return *this;
+    }
+
+    inline Vec2<T>& operator *= (const T& s){
+    x *= s;
+    y *= s;
+    return *this;
+    }
+  
+    inline Vec2<T>& operator *= (const Vec2<T>& v){
+      x *= v.x;
+      y *= v.y;
+      return *this;
+    }
+
+    inline Vec2<T>& operator /= (const T& s){
+      x /= s;
+      y /= s;
+      return *this;
+    }
+  
     void print() {
+#ifdef DEBUG
       std::cout << this->x << " " << this->y << std::endl;
+#endif
     }
 };
 
@@ -51,11 +90,11 @@ template <typename T>
 class Rand_gen <T, std::enable_if_t<std::is_floating_point_v<T>>>
 {
   public:
-    static T rand_real(const T& min, const T& max) {
-      std::random_device rd;
-      std::mt19937 gen(rd());
-      std::uniform_real_distribution<T> distribution(min, max);
-      return distribution(gen);
+    static T rand_num(const T& min, const T& max) {
+      std::random_device rd; 
+      std::mt19937 gen(rd()); 
+      std::uniform_real_distribution<T> dis(min, max);
+      return dis(gen);
     }
 };
 
@@ -63,11 +102,11 @@ template <typename T>
 class Rand_gen <T, std::enable_if_t<std::is_integral_v<T>>>
 {
   public:
-    static T rand_int(const T& min, const T& max) {
-      std::random_device rd;
-      std::mt19937 gen(rd());
-      std::uniform_int_distribution<T> distribution(min, max);
-      return distribution(gen);
+    static T rand_num(const T& min, const T& max) {
+      std::random_device rd; 
+      std::mt19937 gen(rd()); 
+      std::uniform_int_distribution<T> dis(min, max);
+      return dis(gen);
     }
 };
 
@@ -118,7 +157,8 @@ class Game
                           get_win              (void)
                             {return this->win;}
 
-                          Game                 (void);
+                          Game                 (const int& width, const int& height): 
+                                                  SCREEN_WIDTH(width), SCREEN_HEIGHT(height) {}
     
     inline std::shared_ptr<Player> 
                          get_main_player       (void)

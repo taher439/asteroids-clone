@@ -5,7 +5,7 @@
 int 
 main(void)
 {
-  std::unique_ptr<Game>    test = std::make_unique<Game>();
+  std::unique_ptr<Game>    test = std::make_unique<Game>(640, 480);
   test->init();
   test->set_main_player(std::make_shared<Player>());
   test->proc_input();

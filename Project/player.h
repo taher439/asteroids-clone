@@ -5,7 +5,7 @@
 class Player 
 {
   private:
-    Vec2<int> center;
+    Vec2<double> center;
     double angle = 90 / 180 * PI;
     const int SCREEN_WIDTH  = 640;
     const int SCREEN_HEIGHT = 480;
@@ -15,17 +15,17 @@ class Player
     std::shared_ptr<SDL_Rect>    dst, src;
     
     static constexpr double      ship_thrust = 5;
-    double thrust_x, thrust_y;
+    Vec2<double> thrust_vec;
     int lives = 3, score = 0;
 
   public:
     inline void           set_angle            (double&& a)
                             {this->angle = std::move(a);}
 
-    inline Vec2<int>      get_center            (void)
+    inline Vec2<double>   get_center            (void)
                             {return this->center;}
 
-    inline void          set_center            (Vec2<int>&& c)
+    inline void          set_center            (Vec2<double>&& c)
                             {this->center = std::move(c);}
 
     inline void           set_surf             (std::shared_ptr<SDL_Surface>&& s)
@@ -61,26 +61,28 @@ class Player
 
                           Player               (void) 
                           {
-                            this->center = Vec2<int>(640 / 2 - 8, 480 / 2 - 8);
+                            this->center     = Vec2<double>(640 / 2 - 8, 480 / 2 - 8);
+                            this->thrust_vec = Vec2<double>();
                           }
                           
     inline void           thrust               (const double& last_angle) {
-                            this->thrust_x += 
+                          this->thrust_vec.x += 
                               Player::ship_thrust * sin(last_angle) / 60;
-                            this->thrust_y -= 
+                            this->thrust_vec.y -= 
                               Player::ship_thrust * cos(last_angle) / 60;
+                          
+                            this->thrust_vec.print();
                           }
 
     inline void           move_ship            (void) 
                           {
-                            this->center.x += this->thrust_x;
-                            this->center.y += this->thrust_y;
+                            this->center += this->thrust_vec;
                           }
 
     inline void           slow_ship            (void) 
                           {
-                            this->thrust_x -= 0.005 * this->thrust_x;
-                            this->thrust_y -= 0.005 * this->thrust_y;
+                            this->thrust_vec.x -= 0.005 * this->thrust_vec.x;
+                            this->thrust_vec.y -= 0.005 * this->thrust_vec.y;
                           }
 
     inline void           wrap_ship            (void) 
