@@ -40,19 +40,23 @@ class Player
     inline void           set_rect_dst         (std::shared_ptr<SDL_Rect>&& dst)
                             {this->dst = std::move(dst);}
 
-    inline std::shared_ptr<SDL_Surface>
+    inline std::shared_ptr
+    <SDL_Surface>
                           get_surf             (void)
                             {return this->player_surf;}
 
-    inline std::shared_ptr<SDL_Texture>
+    inline std::shared_ptr
+    <SDL_Texture>
                           get_tex              (void)
                             {return this->texture;}
 
-    inline std::shared_ptr<SDL_Rect>
+    inline std::shared_ptr
+    <SDL_Rect>
                           get_rect_dst         (void)
                             {return this->dst;}
 
-    inline std::shared_ptr<SDL_Rect>
+    inline std::shared_ptr
+    <SDL_Rect>
                           get_rect_src         (void)
                             {return this->src;}
 

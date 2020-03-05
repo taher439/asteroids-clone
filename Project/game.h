@@ -118,9 +118,11 @@ class Game
     std::shared_ptr<SDL_Renderer> rend;
 
     SDL_Event ev;
-    std::vector<std::shared_ptr<Player>> players;
-    std::shared_ptr<Player> main_player;
+    std::vector<std::shared_ptr<Asteroid>> active_asteroids;
+    std::vector<std::shared_ptr<Player>>   players;
+    std::shared_ptr<Player>                main_player;
     
+
     enum state {
       MENU,
       GAME,
@@ -140,27 +142,31 @@ class Game
                                                 std::shared_ptr<SDL_Rect>&&);
 
     void                  kill                 (void);
-    void                  init                 (void);
+    void                  init                 (const int&);
     inline void           set_win              (std::shared_ptr<SDL_Window>&&);
     inline void           set_surf             (std::shared_ptr<SDL_Surface>&&);
     inline void           set_rend             (std::shared_ptr<SDL_Renderer>&&);
 
-    inline std::shared_ptr<SDL_Renderer> 
+    inline std::shared_ptr
+    <SDL_Renderer> 
                           get_rend             (void)
                             {return this->rend;}
 
-    inline std::shared_ptr<SDL_Surface>
+    inline std::shared_ptr
+    <SDL_Surface>
                           get_surf             (void)
                             {return this->surf;}
 
-    inline std::shared_ptr<SDL_Window>
+    inline std::shared_ptr
+    <SDL_Window>
                           get_win              (void)
                             {return this->win;}
 
                           Game                 (const int& width, const int& height): 
                                                   SCREEN_WIDTH(width), SCREEN_HEIGHT(height) {}
     
-    inline std::shared_ptr<Player> 
+    inline std::shared_ptr
+    <Player> 
                          get_main_player       (void)
                            {return this->main_player;}
 

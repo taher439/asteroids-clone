@@ -6,20 +6,20 @@ class Asteroid
 {
   private:
     enum size {
-      large,
-      medium,
-      small,
-      tiny
+      BIG,
+      MID,
+      SMALL,
+      XSMALL
     };
 
-    Vec2<int> center;
-    std::vector<Vec2<int>> points;
+    std::vector<Vec2<double>> points;
+    Vec2<double> center;
     size current_size;
 
   public:
-    void draw_asteroid         (void);
+    void draw_asteroid         (const std::shared_ptr<SDL_Renderer>&);
     void split_asteroid        (void);
     void detect_collision_ship (const std::shared_ptr<Player>&);
-         Asteroid              (void);
+         Asteroid              (int, double&&, double&&);
 };
 #endif 

@@ -3,13 +3,15 @@
 #include "sdl_wrapper.h"
 
 void 
-Game::init(void) 
+Game::init(const int& asteroid_num) 
 {
   SDL_wrapper::init();
   this->win = SDL_wrapper::creat_win(this->SCREEN_WIDTH, this->SCREEN_HEIGHT);
   this->rend = SDL_wrapper::creat_rend(this->win);
+  //initialize the asteroid field
+  for (int i = 0; i < asteroid_num; ++i)
+    this->active_asteroids.push_back(std::make_shared<Asteroid>());
 }
-
 void 
 Game::kill(void) 
 {
