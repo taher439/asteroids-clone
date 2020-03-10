@@ -96,6 +96,13 @@ class Rand_gen <T, std::enable_if_t<std::is_floating_point_v<T>>>
       std::uniform_real_distribution<T> dis(min, max);
       return dis(gen);
     }
+
+    static T rand_gauss(const T& min, const T& max) {
+      std::random_device rd; 
+      std::mt19937 gen(rd()); 
+      std::normal_distribution<T> dis(min, max);
+      return dis(gen);
+    }
 };
 
 template <typename T>
@@ -106,6 +113,13 @@ class Rand_gen <T, std::enable_if_t<std::is_integral_v<T>>>
       std::random_device rd; 
       std::mt19937 gen(rd()); 
       std::uniform_int_distribution<T> dis(min, max);
+      return dis(gen);
+    }
+  
+    static T rand_gauss(const T& min, const T& max) {
+      std::random_device rd; 
+      std::mt19937 gen(rd()); 
+      std::normal_distribution<T> dis(min, max);
       return dis(gen);
     }
 };
