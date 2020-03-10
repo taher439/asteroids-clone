@@ -1,17 +1,20 @@
 #include "player.h"
 #include "game.h"
 #include "sdl_wrapper.h"
+#include "asteroid.h"
 
 void 
-Game::init(const int& asteroid_num) 
+Game::init(int&& asteroid_num) 
 {
   SDL_wrapper::init();
   this->win = SDL_wrapper::creat_win(this->SCREEN_WIDTH, this->SCREEN_HEIGHT);
   this->rend = SDL_wrapper::creat_rend(this->win);
   //initialize the asteroid field
-  for (int i = 0; i < asteroid_num; ++i)
-    this->active_asteroids.push_back(std::make_shared<Asteroid>());
+  this->total_asteroids = std::move(asteroid_num);
+  for (int i = 0; i < this->total_asteroids; i++)
+    this->active_asteroids.push_back(std::make_shared<Asteroid>(5, 670.0, 540.0));
 }
+
 void 
 Game::kill(void) 
 {
@@ -82,6 +85,10 @@ Game::proc_input(void)
     SDL_SetRenderDrawColor(rend.get(), 0, 0, 0, 255);
     SDL_RenderClear(rend.get());
       main_player->draw_ship(this->rend, thrust);
+      for (auto a: this->active_asteroids) {
+        a->draw_asteroid(this->rend);
+      }
+
     SDL_RenderPresent(rend.get());
   
     //framerate limit

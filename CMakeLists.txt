@@ -5,7 +5,7 @@ add_subdirectory(SDL2)
 
 project(Asteroids LANGUAGES CXX)
 
-file(GLOB SRC_FILES Project/*.h Project/*.cpp)
+file(GLOB SRC_FILES "*Project/*.h" "*Project/*.cpp")
 
 # convenient function for easy compilation
 # usage: compilation(EXEC nom_executable SRC files sources .cpp & .h USE_SDL)
@@ -14,6 +14,7 @@ file(GLOB SRC_FILES Project/*.h Project/*.cpp)
 function(COMPILATION)
     cmake_parse_arguments( COMPILATION_PREFIX "USE_SDL" "EXEC" "SRC" ${ARGN})
     add_definitions(-D AZERTY)
+    add_definitions(-D DEBUG)
     add_executable(${COMPILATION_PREFIX_EXEC} "")
     target_sources(${COMPILATION_PREFIX_EXEC} PRIVATE ${COMPILATION_PREFIX_SRC})
     target_include_directories(${COMPILATION_PREFIX_EXEC} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}})

@@ -113,6 +113,7 @@ class Rand_gen <T, std::enable_if_t<std::is_integral_v<T>>>
 class Game 
 {
   private:
+    int total_asteroids;
     std::shared_ptr<SDL_Window>   win;
     std::shared_ptr<SDL_Surface>  surf;
     std::shared_ptr<SDL_Renderer> rend;
@@ -135,14 +136,14 @@ class Game
     const int SCREEN_WIDTH  = 640;
     const int SCREEN_HEIGHT = 480;
     bool quit = false;
-    
+
     void                  load_tex             (const std::shared_ptr<Player>&,
                                                 const std::string&, 
                                                 std::shared_ptr<SDL_Rect>&&, 
                                                 std::shared_ptr<SDL_Rect>&&);
 
     void                  kill                 (void);
-    void                  init                 (const int&);
+    void                  init                 (int&&);
     inline void           set_win              (std::shared_ptr<SDL_Window>&&);
     inline void           set_surf             (std::shared_ptr<SDL_Surface>&&);
     inline void           set_rend             (std::shared_ptr<SDL_Renderer>&&);
