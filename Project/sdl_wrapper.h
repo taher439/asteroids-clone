@@ -38,7 +38,10 @@ class SDL_wrapper
 
         static void       draw_lines       (const std::shared_ptr<SDL_Renderer>&,
                                             const std::vector<SDL_Point>&);
-
+        static void       draw_point       (const std::shared_ptr<SDL_Renderer>&, 
+                                            const int&, 
+                                            const int&);
+                                            
         static void       fill_screen      (const std::shared_ptr<SDL_Window>&);
 };
 

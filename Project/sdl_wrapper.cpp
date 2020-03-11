@@ -88,3 +88,13 @@ SDL_wrapper::fill_screen(const std::shared_ptr<SDL_Window>& win)
   SDL_FillRect(surface, NULL, skyblue);
   SDL_UpdateWindowSurface(win.get());
 }
+
+void 
+SDL_wrapper::draw_point(const std::shared_ptr<SDL_Renderer>& rend, 
+                        const int& x, 
+                        const int& y)
+{
+  int ret = SDL_RenderDrawPoint(rend.get(), x, y);
+  if (ret < 0)
+    ret_err_SDL("SDL drax point Error");
+}

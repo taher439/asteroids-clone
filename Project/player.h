@@ -7,18 +7,18 @@ class Player
   private:
     Vec2<double> center;
     double angle = 90 / 180 * PI;
-    const int SCREEN_WIDTH  = 640;
-    const int SCREEN_HEIGHT = 480;
+    int SCREEN_WIDTH;
+    int SCREEN_HEIGHT;
 
     std::shared_ptr<SDL_Texture> texture;
     std::shared_ptr<SDL_Surface> player_surf;
     std::shared_ptr<SDL_Rect>    dst, src;
-    
     static constexpr double      ship_thrust = 5;
     Vec2<double> thrust_vec;
     int lives = 3, score = 0;
 
   public:
+    std::vector<std::shared_ptr<blast>>  blasts;
     inline void           set_angle            (double&& a)
                             {this->angle = std::move(a);}
 
@@ -63,9 +63,11 @@ class Player
     inline double         get_angle            (void)
                             {return this->angle;}
 
-                          Player               (void) 
+                          Player               (int width, int height) 
                           {
-                            this->center     = Vec2<double>(640 / 2 - 8, 480 / 2 - 8);
+                            this->SCREEN_HEIGHT = height;
+                            this->SCREEN_WIDTH = width;
+                            this->center     = Vec2<double>(width / 2 - 8, height / 2 - 8);
                             this->thrust_vec = Vec2<double>();
                           }
                           
@@ -101,7 +103,8 @@ class Player
                             if (this->center.y < 0) 
                               this->center.y = this->SCREEN_HEIGHT;
                           }
-
+    void                 add_blast            (const double&);
+    void                 draw_fire            (const std::shared_ptr<SDL_Renderer>&);
     void                 draw_ship            (const std::shared_ptr<SDL_Renderer>&,
                                                const bool&);
 };

@@ -24,6 +24,16 @@
 class Player;
 class Asteroid;
 
+typedef struct sdl_event_handler
+{
+  SDL_Event ev;
+  double sprite_angle;
+  bool thrust;
+  bool quit;
+  bool blast;
+  int FPS;
+} sdl_event_handler;
+
 template <typename T>
 class Vec2 {
   static_assert(std::is_arithmetic_v<T>);
@@ -82,6 +92,13 @@ class Vec2 {
 #endif
     }
 };
+
+typedef struct blast
+{
+  Vec2<double> loc;
+  double angle;
+} blast;
+
 
 template <typename T, typename = void>
 class Rand_gen;
@@ -147,8 +164,8 @@ class Game
     state current_state;
     
   public:
-    const int SCREEN_WIDTH  = 640;
-    const int SCREEN_HEIGHT = 480;
+    const int SCREEN_WIDTH;
+    const int SCREEN_HEIGHT;
     bool quit = false;
 
     void                  load_tex             (const std::shared_ptr<Player>&,

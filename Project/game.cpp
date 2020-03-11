@@ -3,6 +3,7 @@
 #include "sdl_wrapper.h"
 #include "asteroid.h"
 
+
 void 
 Game::init(int&& asteroid_num) 
 {
@@ -22,37 +23,43 @@ Game::kill(void)
 }
 
 static void 
-handle_event(const SDL_Event& ev, 
-             double& sprite_angle, 
-             bool& thrust, 
-             bool& quit, 
-             const int& FPS) 
+handle_event(sdl_event_handler& hdl) 
 {
-  switch(ev.type) {
+  switch(hdl.ev.type) {
         case SDL_QUIT:
-          quit = true;
+          #ifdef DEBUG
+            std::cout << "player pressed quit\n";
+          #endif
+          hdl.quit = true;
           break;
         case SDL_KEYDOWN: {
-          if (ev.key.keysym.sym == LEFT)
-            sprite_angle = (-360.0000 / 180.0000) * PI / FPS;
-          if (ev.key.keysym.sym == RIGHT)
-            sprite_angle = (360.0000  / 180.0000) * PI / FPS;
+          if (hdl.ev.key.keysym.sym == LEFT)
+            hdl.sprite_angle = (-360.0000 / 180.0000) * PI / hdl.FPS;
+          if (hdl.ev.key.keysym.sym == RIGHT)
+            hdl.sprite_angle = (360.0000  / 180.0000) * PI / hdl.FPS;
+          
+          if (hdl.ev.key.keysym.sym == SDLK_SPACE)
+            hdl.blast = true;
+
           break;
         }
         case SDL_KEYUP: {
-          if (ev.key.keysym.sym == LEFT || 
-              ev.key.keysym.sym == RIGHT)
-            sprite_angle = 0;
+          if (hdl.ev.key.keysym.sym == LEFT || 
+              hdl.ev.key.keysym.sym == RIGHT)
+            hdl.sprite_angle = 0;
+
+          if (hdl.ev.key.keysym.sym == SDLK_SPACE)
+            hdl.blast = false;
           break;
         }
         case SDL_MOUSEBUTTONDOWN: {
-          if (ev.button.button == SDL_BUTTON_LEFT)
-            thrust = true;
+          if (hdl.ev.button.button == SDL_BUTTON_LEFT)
+            hdl.thrust = true;
           break;
         }
         case SDL_MOUSEBUTTONUP: {
-          if (ev.button.button == SDL_BUTTON_LEFT)
-            thrust = false;
+          if (hdl.ev.button.button == SDL_BUTTON_LEFT)
+            hdl.thrust = false;
           break;
         }
    }
@@ -61,35 +68,47 @@ handle_event(const SDL_Event& ev,
 void 
 Game::proc_input(void) 
 {
-  double    sprite_angle = 0;
-  bool      thrust = false;
-
-  const int FPS = 60;
-  const int frame_delay = 1000 / FPS;
+  sdl_event_handler hdl;
+  hdl.sprite_angle = 0;
+  hdl.thrust = false;
+  hdl.ev = this->ev;
+  hdl.FPS = 60;
+  hdl.quit = false;
+  hdl.blast = false;
+  const int frame_delay = 1000 / hdl.FPS;
   Uint32    frame_start;
         int frame_time;
   
-  while(!this->quit) { 
+  while(!hdl.quit) { 
     frame_start = SDL_GetTicks();
-    while(SDL_PollEvent(&this->ev) != 0)
-      handle_event(this->ev, sprite_angle, thrust, quit, FPS);
+    while(SDL_PollEvent(&(hdl.ev)) != 0)
+      handle_event(hdl);
 
-    main_player->set_angle(main_player->get_angle() + sprite_angle);
-    if (thrust)
+    main_player->set_angle(main_player->get_angle() + hdl.sprite_angle);
+    if (hdl.thrust)
       main_player->thrust(main_player->get_angle());
     else
       main_player->slow_ship();
+    
+    if (hdl.blast) {
+      #ifdef DEBUG
+        std::cout << "player pressed fire button\n";
+      #endif
+      main_player->add_blast(main_player->get_angle());
+      hdl.blast = false;
+    }
+
     main_player->wrap_ship();
     main_player->move_ship();
 
     SDL_SetRenderDrawColor(rend.get(), 0, 0, 0, 255);
     SDL_RenderClear(rend.get());
-      main_player->draw_ship(this->rend, thrust);
+      main_player->draw_ship(this->rend, hdl.thrust);
 
       for (auto a: this->active_asteroids) {
         a->draw_asteroid(this->rend);
       }
-
+      main_player->draw_fire(this->rend);
     SDL_RenderPresent(rend.get());
   
     //framerate limit
@@ -98,39 +117,6 @@ Game::proc_input(void)
       SDL_Delay(frame_delay - frame_time);
   }
   
-  if (this->quit)
+  if (hdl.quit)
     this->kill();
 }
-
-
-/*
-void 
-Game::load_tex(const std::shared_ptr<Player>& player, 
-               const std::string& path, 
-                     std::shared_ptr<SDL_Rect>&& src, 
-                     std::shared_ptr<SDL_Rect>&& dst)
-{
-  player->set_surf(sdl_shared(IMG_Load(path.c_str())));
-  player->set_rect_dst(std::move(dst));
-  player->set_rect_src(std::move(src));
-  if(player->get_surf() == NULL)
-    std::cerr 
-         << "Unable to load image, SDL_image Error " 
-         << path.c_str() << " " 
-         << IMG_GetError() 
-         << std::endl;
-  else
-  {
-    player->set_tex(sdl_shared(SDL_CreateTextureFromSurface(
-                                this->rend.get(), 
-                                player->get_surf().get())));
-    if (player->get_tex() == NULL)
-      std::cerr 
-           << "Unable to create texture from %s! SDL Error: "
-           << path.c_str() << " "
-           << SDL_GetError() 
-           << std::endl;
-    this->players.push_back(player);
-  }
-}
-*/
