@@ -16,7 +16,7 @@ class Asteroid
   public:
     void draw_asteroid         (const std::shared_ptr<SDL_Renderer>&);
     void split_asteroid        (void);
-    void detect_collision_ship (const std::shared_ptr<Player>&);
+    void detect_collision_ship (std::vector<std::shared_ptr<blast>>&);
          Asteroid              (int, double&&, double&&, double);
 };
 #endif 

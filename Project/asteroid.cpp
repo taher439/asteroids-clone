@@ -8,6 +8,7 @@ Asteroid::Asteroid(int vertices, double&& x, double&& y, double size)
   double radius, angle, step, r, sp;
    
   radius = size;
+  this->current_size = size;
   sp = 0.5 * radius; 
 
   step = 1.0 / vertices;
@@ -32,7 +33,8 @@ Asteroid::Asteroid(int vertices, double&& x, double&& y, double size)
   }
 }
 
-void Asteroid::draw_asteroid(const std::shared_ptr<SDL_Renderer>& rend) 
+void 
+Asteroid::draw_asteroid(const std::shared_ptr<SDL_Renderer>& rend) 
 {
   auto prev = this->points[0];
   auto size = this->points.size();
@@ -51,4 +53,22 @@ void Asteroid::draw_asteroid(const std::shared_ptr<SDL_Renderer>& rend)
                          this->points[size - 1].y,
                          this->points[0].x,
                          this->points[0].y);
+}
+
+void 
+Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts) 
+{
+  double dx, dy, dist; 
+  for (auto s = blasts.begin(); s != blasts.end(); ++s) {
+    dx = abs(this->center.x - (*s)->loc.x);
+    dy = abs(this->center.y - (*s)->loc.y);
+    dist = dx * dx + dy * dy;
+    if (dist <= this->current_size * this->current_size) {
+      #ifdef DEBUG
+        std::cout << "\033[1;31mbold [*] collision detected\033[0m\n" << std::endl;
+      #endif
+      blasts.erase(s);
+      s--;
+    }
+  }
 }

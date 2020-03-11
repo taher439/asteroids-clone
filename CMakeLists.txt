@@ -1,21 +1,13 @@
 cmake_minimum_required(VERSION 3.6)
 
-# begin with compilation of SDL2 copy 
 add_subdirectory(SDL2)
 
-project(Asteroids LANGUAGES CXX)
-
-file(GLOB SRC_FILES "*Project/*.h" "*Project/*.cpp")
-
-# convenient function for easy compilation
-# usage: compilation(EXEC nom_executable SRC files sources .cpp & .h USE_SDL)
-# add USE_SDL if you want to use SDL2 library
-
+project(ASTEROID LANGUAGES CXX)
 function(COMPILATION)
     cmake_parse_arguments( COMPILATION_PREFIX "USE_SDL" "EXEC" "SRC" ${ARGN})
+    add_executable(${COMPILATION_PREFIX_EXEC} "")
     add_definitions(-D AZERTY)
     add_definitions(-D DEBUG)
-    add_executable(${COMPILATION_PREFIX_EXEC} "")
     target_sources(${COMPILATION_PREFIX_EXEC} PRIVATE ${COMPILATION_PREFIX_SRC})
     target_include_directories(${COMPILATION_PREFIX_EXEC} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}})
     set_target_properties(${COMPILATION_PREFIX_EXEC} PROPERTIES CXX_STANDARD 17)
@@ -24,4 +16,19 @@ function(COMPILATION)
     endif()
 endfunction()
 
-compilation(EXEC main SRC ${SRC_FILES} USE_SDL)
+# ajouter les sources ici
+
+set(SRC_FILES_
+    Project/asteroid.cpp  
+    Project/asteroid.h  
+    Project/game.cpp  
+    Project/game.h  
+    Project/main.cpp  
+    Project/player.cpp  
+    Project/player.h 
+    Project/sdl_wrapper.cpp  
+    Project/sdl_wrapper.h)
+
+# fonction de compilation
+# syntaxe ( EXEC nom_executable SRC sources  [USE_SDL] )
+compilation(EXEC main SRC ${SRC_FILES_}  USE_SDL)

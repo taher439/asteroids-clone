@@ -1,8 +1,7 @@
 #ifndef _GAME_H
 #define _GAME_H
 #include <stdlib.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL.h>
 #include <iostream>
 #include <string>
 #include <vector>
