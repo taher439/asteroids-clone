@@ -13,7 +13,7 @@ Game::init(int&& asteroid_num)
   //initialize the asteroid field
   this->total_asteroids = std::move(asteroid_num);
   for (int i = 0; i < this->total_asteroids; i++)
-    this->active_asteroids.push_back(std::make_shared<Asteroid>(5, 100, 100, SMALL));
+    this->active_asteroids.push_back(std::make_shared<Asteroid>(20, 100, 100, MID));
 }
 
 void 
@@ -104,12 +104,11 @@ Game::proc_input(void)
     SDL_SetRenderDrawColor(rend.get(), 0, 0, 0, 255);
     SDL_RenderClear(rend.get());
       main_player->draw_ship(this->rend, hdl.thrust);
-
-      for (auto a: this->active_asteroids) {
-        a->draw_asteroid(this->rend);
-        a->detect_collision_ship(main_player->blasts);
-      }
       main_player->draw_fire(this->rend);
+      for (auto a: this->active_asteroids) {
+        a->detect_collision_ship(main_player->blasts);
+        a->draw_asteroid(this->rend);
+      }
     SDL_RenderPresent(rend.get());
   
     //framerate limit

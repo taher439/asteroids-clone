@@ -17,7 +17,6 @@ function(COMPILATION)
 endfunction()
 
 # ajouter les sources ici
-
 set(SRC_FILES_
     Project/asteroid.cpp  
     Project/asteroid.h  
