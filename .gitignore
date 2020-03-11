@@ -2,4 +2,5 @@ main
 *.o
 .gdb_history
 .vscode*
+./SDL2
 build
