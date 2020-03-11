@@ -105,9 +105,8 @@ Game::proc_input(void)
     SDL_RenderClear(rend.get());
       main_player->draw_ship(this->rend, hdl.thrust);
 
-      for (auto a: this->active_asteroids) {
+      for (auto a: this->active_asteroids)
         a->draw_asteroid(this->rend);
-      }
       main_player->draw_fire(this->rend);
     SDL_RenderPresent(rend.get());
   

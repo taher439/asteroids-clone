@@ -36,6 +36,7 @@ void Player::add_blast(const double& angle)
   tmp->loc = Vec2<double>(this->center);
   tmp->angle = angle;
   #ifdef DEBUG
+    std::cout << "[*]vector blast tmp ";
     tmp->loc.print();
   #endif
   this->blasts.push_back(tmp);
@@ -43,23 +44,30 @@ void Player::add_blast(const double& angle)
 
 void Player::draw_fire(const std::shared_ptr<SDL_Renderer>& rend)
 {
+    for (auto s: this->blasts) {
+        s->loc.x += cos(s->angle - 20.4) * 5;
+        s->loc.y += sin(s->angle - 20.4) * 5;
+        SDL_wrapper::draw_point(rend, s->loc.x, s->loc.y);
+        #ifdef DEBUG
+            std::cout << "current angle " << angle << std::endl; 
+        #endif
+    }
+
     for (auto s = this->blasts.begin(); s != this->blasts.end(); ++s) {
-        if ((*s)->loc.x > this->SCREEN_WIDTH) 
-            s = this->blasts.erase(s);
-        if ((*s)->loc.x < 0) 
-            s = this->blasts.erase(s);            
-        if ((*s)->loc.y > this->SCREEN_HEIGHT) 
-            s = this->blasts.erase(s);   
-        if ((*s)->loc.y < 0) 
-            s = this->blasts.erase(s);
-            
-        if (s < this->blasts.end()) {
-            (*s)->loc.x += cos((*s)->angle - 20.4) * 5;
-            (*s)->loc.y += sin((*s)->angle - 20.4) * 5;
+        if (this->blasts.size() == 0)
+            return;
+         #ifdef DEBUG
+            std::cout << "[!] blast vector size " 
+                      << this->blasts.size() << std::endl; 
+        #endif
+
+        if ((*s)->loc.x > this->SCREEN_WIDTH 
+            || ((*s)->loc.x < 0) 
+            || ((*s)->loc.y > this->SCREEN_HEIGHT) 
+            || ((*s)->loc.y < 0)) {
             SDL_wrapper::draw_point(rend, (*s)->loc.x, (*s)->loc.y);
-            #ifdef DEBUG
-                std::cout << "current angle " << angle << std::endl; 
-            #endif
-        } else break;
+            this->blasts.erase(s);
+            s--;
+        }
     }
 }
