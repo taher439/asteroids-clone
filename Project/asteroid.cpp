@@ -1,10 +1,10 @@
 #include "asteroid.h"
 #include "sdl_wrapper.h"
 
-Asteroid::Asteroid(int vertices, double&& x, double&& y, double size) 
+Asteroid::Asteroid(int vertices, double x, double y, double size) 
 {
-  this->center.x = std::move(x);
-  this->center.y = std::move(y);
+  this->center.x = x;
+  this->center.y = y;
   double radius, angle, step, r, sp;
    
   radius = size;
@@ -70,5 +70,13 @@ Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts)
       blasts.erase(s);
       s--;
     }
+  }
+}
+
+void 
+Asteroid::detect_inter(const Vec2<double>& A, const Vec2<double>& B)
+{
+  for (auto i: this->points) {
+
   }
 }

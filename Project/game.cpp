@@ -5,15 +5,19 @@
 
 
 void 
-Game::init(int&& asteroid_num) 
+Game::init(int asteroid_num) 
 {
   SDL_wrapper::init();
   this->win = SDL_wrapper::creat_win(this->SCREEN_WIDTH, this->SCREEN_HEIGHT);
   this->rend = SDL_wrapper::creat_rend(this->win);
   //initialize the asteroid field
-  this->total_asteroids = std::move(asteroid_num);
-  for (int i = 0; i < this->total_asteroids; i++)
-    this->active_asteroids.push_back(std::make_shared<Asteroid>(20, 100, 100, MID));
+  this->total_asteroids = asteroid_num;
+  Vec2<double> center(0, 0);
+  for (int i = 0; i < this->total_asteroids; i++) {
+    center.x = Rand_gen<double>::rand_num(0, SCREEN_WIDTH);
+    center.y = Rand_gen<double>::rand_num(0, SCREEN_HEIGHT);
+    this->active_asteroids.push_back(std::make_shared<Asteroid>(20, center, MID));
+  }
 }
 
 void 

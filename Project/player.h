@@ -14,13 +14,13 @@ class Player
     std::shared_ptr<SDL_Surface> player_surf;
     std::shared_ptr<SDL_Rect>    dst, src;
     static constexpr double      ship_thrust = 5;
-    Vec2<double> thrust_vec;
+    Vec2<double> thrust_vec, A, B, C, D, E, F;
     int lives = 3, score = 0;
 
   public:
     std::vector<std::shared_ptr<blast>>  blasts;
-    inline void           set_angle            (double&& a)
-                            {this->angle = std::move(a);}
+    inline void           set_angle            (double a)
+                            {this->angle = a;}
 
     inline Vec2<double>   get_center            (void)
                             {return this->center;}
@@ -105,6 +105,7 @@ class Player
                           }
     void                 add_blast            (const double&);
     void                 draw_fire            (const std::shared_ptr<SDL_Renderer>&);
+    void                 asteroid_collision   (const std::shared_ptr<Asteroid>&);
     void                 draw_ship            (const std::shared_ptr<SDL_Renderer>&,
                                                const bool&);
 };

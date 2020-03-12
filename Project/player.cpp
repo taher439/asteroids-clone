@@ -4,33 +4,38 @@
 void 
 Player::draw_ship(const std::shared_ptr<SDL_Renderer>& rend, const bool& thrusting)
 {
-    SDL_wrapper::draw_line(
-        rend, 
-        this->center.x + 10 * sin(this->angle),
-        this->center.y - 10 * cos(this->angle), 
-        this->center.x - 10 * (sin(this->angle) + cos(this->angle)),
-        this->center.y + 10 * (cos(this->angle) - sin(this->angle)));
-                           
-    SDL_wrapper::draw_line(
-        rend, 
-        this->center.x + 10 * sin(this->angle),
-        this->center.y - 10 * cos(this->angle), 
-        this->center.x - 10 * (sin(this->angle) - cos(this->angle)),
-        this->center.y + 10 * (cos(this->angle) + sin(this->angle)));
+    //first segment
+    this->A = Vec2<double>(this->center.x + 10 * sin(this->angle), 
+                this->center.y - 10 * cos(this->angle));
 
-     SDL_wrapper::draw_line(
-        rend,
-        this->center.x - 7 * (sin(this->angle) + cos(this->angle)),
-        this->center.y + 7 * (cos(this->angle) - sin(this->angle)),
-        this->center.x - 7 * (sin(this->angle) - cos(this->angle)),
-        this->center.y + 7 * (cos(this->angle) + sin(this->angle)));
+    this->B = Vec2<double>(this->center.x - 10 * (sin(this->angle) + cos(this->angle)),
+                this->center.y + 10 * (cos(this->angle) - sin(this->angle)));
+
+    //second segment
+    this->C = Vec2<double>(this->center.x + 10 * sin(this->angle),
+                this->center.y - 10 * cos(this->angle));
+
+    this->D = Vec2<double>(this->center.x - 10 * (sin(this->angle) - cos(this->angle)),
+                this-> center.y + 10 * (cos(this->angle) + sin(this->angle)));
+
+    //third segment
+    this->E = Vec2<double>(this->center.x - 7 * (sin(this->angle) + cos(this->angle)),
+                this->center.y + 7 * (cos(this->angle) - sin(this->angle)));
+                   
+    this->F = Vec2<double>(this->center.x - 7 * (sin(this->angle) - cos(this->angle)),
+                this->center.y + 7 * (cos(this->angle) + sin(this->angle)));
+
+    SDL_wrapper::draw_line(rend, A.x, A.y, B.x, B.y);
+    SDL_wrapper::draw_line(rend, C.x, C.y, D.x, D.y);
+    SDL_wrapper::draw_line(rend, E.x, E.y, F.x, F.y);
 
     if (thrusting) {
         //add thrust animation
     }
 }
 
-void Player::add_blast(const double& angle)
+void 
+Player::add_blast(const double& angle)
 {
   std::shared_ptr<blast> tmp = std::make_shared<blast>();
   tmp->loc = Vec2<double>(this->center);
@@ -42,7 +47,8 @@ void Player::add_blast(const double& angle)
   this->blasts.push_back(tmp);
 }
 
-void Player::draw_fire(const std::shared_ptr<SDL_Renderer>& rend)
+void 
+Player::draw_fire(const std::shared_ptr<SDL_Renderer>& rend)
 {
     for (auto s: this->blasts) {
         s->loc.x += cos(s->angle - 20.4) * 5;
@@ -70,4 +76,14 @@ void Player::draw_fire(const std::shared_ptr<SDL_Renderer>& rend)
             s--;
         }
     }
+}
+
+void 
+Player::asteroid_collision(const std::shared_ptr<Asteroid>& a)
+{
+    auto ccw   = [](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C) 
+                {return (C.y - A.y) * (B.x - A.x) < (B.y-A.y) * (C.x-A.x);};
+    auto inter = [&](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C, Vec2<double>& D)
+                {ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D);};
+    
 }

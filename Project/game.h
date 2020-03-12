@@ -173,7 +173,7 @@ class Game
                                                 std::shared_ptr<SDL_Rect>&&);
 
     void                  kill                 (void);
-    void                  init                 (int&&);
+    void                  init                 (int);
     inline void           set_win              (std::shared_ptr<SDL_Window>&&);
     inline void           set_surf             (std::shared_ptr<SDL_Surface>&&);
     inline void           set_rend             (std::shared_ptr<SDL_Renderer>&&);
