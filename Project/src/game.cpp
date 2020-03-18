@@ -112,6 +112,7 @@ Game::proc_input(void)
       for (auto a: this->active_asteroids) {
         a->detect_collision_ship(main_player->blasts);
         a->draw_asteroid(this->rend);
+        main_player->asteroid_collision(a);
       }
     SDL_RenderPresent(rend.get());
   

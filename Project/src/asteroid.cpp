@@ -1,6 +1,20 @@
 #include "asteroid.h"
 #include "sdl_wrapper.h"
 
+static inline double 
+dist(const Vec2<double>& a, const Vec2<double>& b) 
+{
+  return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+};
+
+static inline bool 
+dist(const Vec2<double>& a, 
+     const Vec2<double>& b, 
+     const Vec2<double>& c) 
+{
+  return round(dist(a, c) + dist(c, b)) == round(dist(a, b));
+}
+
 Asteroid::Asteroid(int vertices, double x, double y, double size) 
 {
   this->center.x = x;
@@ -73,10 +87,11 @@ Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts)
   }
 }
 
-void 
+bool 
 Asteroid::detect_inter(const Vec2<double>& A, const Vec2<double>& B)
 {
-  for (auto i: this->points) {
-
-  }
+  for (auto i: this->points)    
+    if (dist(A, B, i))
+    return true;
+  return false;
 }

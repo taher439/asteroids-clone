@@ -1,5 +1,6 @@
 #include "player.h"
 #include "sdl_wrapper.h"
+#include "asteroid.h"
 
 void 
 Player::draw_ship(const std::shared_ptr<SDL_Renderer>& rend, const bool& thrusting)
@@ -81,9 +82,13 @@ Player::draw_fire(const std::shared_ptr<SDL_Renderer>& rend)
 void 
 Player::asteroid_collision(const std::shared_ptr<Asteroid>& a)
 {
-    auto ccw   = [](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C) 
+  auto ccw   = [](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C) 
                 {return (C.y - A.y) * (B.x - A.x) < (B.y-A.y) * (C.x-A.x);};
-    auto inter = [&](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C, Vec2<double>& D)
+  auto inter = [&](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C, Vec2<double>& D)
                 {ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D);};
-    
+
+  if (a->detect_inter(this->A, this->B) || 
+      a->detect_inter(this->C, this->D) || 
+      a->detect_inter(this->E, this->F))
+        this->thrust_vec *= -1;
 }
