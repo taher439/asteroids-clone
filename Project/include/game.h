@@ -10,27 +10,35 @@
 #include <memory>
 #include <type_traits>
 #include <cmath>
+#include <thread>
 #include <random>
+#include <mutex>
 
 #define PI 3.14159265
 #ifdef AZERTY
-  #define LEFT SDLK_q
-  #define RIGHT SDLK_d
+  #define LEFT      SDLK_q
+  #define RIGHT     SDLK_d
+  #define LEFT_ALT  SDLK_k
+  #define RIGHT_ALT SDLK_m
 #else
-  #define LEFT SDLK_a
-  #define RIGHT SDLK_d
+  #define LEFT      SDLK_a
+  #define RIGHT     SDLK_d
+  #define LEFT_ALT  SDLK_k
+  #define RIGHT_ALT SDLK_m
 #endif
 class Player;
 class Asteroid;
 
 typedef struct sdl_event_handler
 {
-  SDL_Event ev;
+  std::shared_ptr<SDL_Event> ev;
   double sprite_angle;
-  bool thrust;
-  bool quit;
-  bool blast;
-  int FPS;
+  std::mutex mu;
+  bool   thrust,
+         quit, 
+         blast, 
+         second_p;
+  int    FPS;
 } sdl_event_handler;
 
 template <typename T>
@@ -143,16 +151,14 @@ class Rand_gen <T, std::enable_if_t<std::is_integral_v<T>>>
 class Game 
 {
   private:
+    bool mp;
     int total_asteroids;
     std::shared_ptr<SDL_Window>   win;
     std::shared_ptr<SDL_Surface>  surf;
     std::shared_ptr<SDL_Renderer> rend;
-
-    SDL_Event ev;
+    std::shared_ptr<SDL_Event> ev;
     std::vector<std::shared_ptr<Asteroid>> active_asteroids;
     std::vector<std::shared_ptr<Player>>   players;
-    std::shared_ptr<Player>                main_player;
-    
 
     enum state {
       MENU,
@@ -165,7 +171,6 @@ class Game
   public:
     const int SCREEN_WIDTH;
     const int SCREEN_HEIGHT;
-    bool quit = false;
 
     void                  load_tex             (const std::shared_ptr<Player>&,
                                                 const std::string&, 
@@ -173,7 +178,7 @@ class Game
                                                 std::shared_ptr<SDL_Rect>&&);
 
     void                  kill                 (void);
-    void                  init                 (int);
+    void                  init                 (int, bool);
     inline void           set_win              (std::shared_ptr<SDL_Window>&&);
     inline void           set_surf             (std::shared_ptr<SDL_Surface>&&);
     inline void           set_rend             (std::shared_ptr<SDL_Renderer>&&);
@@ -196,17 +201,6 @@ class Game
                           Game                 (const int& width, const int& height): 
                                                   SCREEN_WIDTH(width), SCREEN_HEIGHT(height) {}
     
-    inline std::shared_ptr
-    <Player> 
-                         get_main_player       (void)
-                           {return this->main_player;}
-
-    inline void          set_main_player       (std::shared_ptr<Player>&& p)
-                           {
-                             this->main_player = std::move(p);
-                             this->players.push_back(this->main_player);
-                           }
-                           
     void                 proc_input            (void);
 };
 #endif 

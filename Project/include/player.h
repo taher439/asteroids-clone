@@ -9,7 +9,6 @@ class Player
     double angle = 90 / 180 * PI;
     int SCREEN_WIDTH;
     int SCREEN_HEIGHT;
-
     std::shared_ptr<SDL_Texture> texture;
     std::shared_ptr<SDL_Surface> player_surf;
     std::shared_ptr<SDL_Rect>    dst, src;
@@ -19,6 +18,9 @@ class Player
 
   public:
     std::vector<std::shared_ptr<blast>>  blasts;
+    sdl_event_handler hdl;
+    bool second_p;
+
     inline void           set_angle            (double a)
                             {this->angle = a;}
 
@@ -69,6 +71,12 @@ class Player
                             this->SCREEN_WIDTH = width;
                             this->center     = Vec2<double>(width / 2 - 8, height / 2 - 8);
                             this->thrust_vec = Vec2<double>();
+                            this->hdl.sprite_angle = 0;
+                            this->hdl.thrust = false;
+                            this->hdl.FPS = 60;
+                            this->hdl.quit = false;
+                            this->hdl.blast = false;
+                            this->hdl.second_p = false;
                           }
                           
     inline void           thrust               (const double& last_angle) {
