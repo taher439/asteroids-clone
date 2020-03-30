@@ -115,7 +115,7 @@ bool
 Asteroid::detect_inter(const Vec2<double>& A, const Vec2<double>& B)
 {
   for (auto i: this->points)    
-    if (dist(A, B, i))
+    if (dist(A, B, i+this->center))
     return true;
   return false;
 }
