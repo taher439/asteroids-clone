@@ -141,7 +141,6 @@ Game::proc_input(void)
     this->players[1]->hdl.ev = this->ev;
   }
 
-
   while(!quit) { 
     frame_start = SDL_GetTicks();
     SDL_SetRenderDrawColor(rend.get(), 0, 0, 0, 255);
@@ -183,6 +182,7 @@ Game::proc_input(void)
           a->detect_collision_ship(p->blasts);
           a->draw_asteroid(this->rend);
           p->asteroid_collision(a);
+          a->move_asteroid();
         }
     //framerate limit
       frame_time = SDL_GetTicks() - frame_start;

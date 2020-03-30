@@ -53,6 +53,10 @@ class Vec2 {
       return Vec2(this->x + v.x, this->y + v.y);
     }
 
+    inline Vec2<T> operator-(const Vec2& v) const {
+      return Vec2(this->x - v.x, this->y - v.y);
+    }
+
     inline Vec2<T> operator*(const T& val) const {
       return Vec2(this->x * val, this->y * val);
     }
@@ -91,6 +95,11 @@ class Vec2 {
       x /= s;
       y /= s;
       return *this;
+    }
+
+    inline friend std::ostream& operator << (std::ostream &out, const Vec2<T>& v){
+      out << v.x << " | " << v.y;
+      return out;
     }
   
     void print() {
