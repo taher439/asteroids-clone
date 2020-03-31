@@ -19,6 +19,7 @@ Asteroid::Asteroid(int vertices, double x, double y, double size)
 {
   this->center.x = x;
   this->center.y = y;
+  this->health = 100;
   double radius, angle, step, r, sp;
    
   radius = size;
@@ -73,17 +74,24 @@ void
 Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts) 
 {
   double dx, dy, dist; 
-  for (auto s = blasts.begin(); s != blasts.end(); ++s) {
-    dx = abs(this->center.x - (*s)->loc.x);
-    dy = abs(this->center.y - (*s)->loc.y);
+  std::list<int>  to_delete;
+  
+  for (int i = 0; i < blasts.size(); i++) {
+    dx = abs(this->center.x - blasts[i]->loc.x);
+    dy = abs(this->center.y - blasts[i]->loc.y);
     dist = dx * dx + dy * dy;
     if (dist <= this->current_size * this->current_size) {
       #ifdef DEBUG
         std::cout << "\033[1;31mbold [*] collision detected\033[0m\n" << std::endl;
       #endif
-      blasts.erase(s);
-      s--;
+      if (this->health > 0)
+        this->health -= 25;
+      to_delete.emplace_back(i);
     }
+  }
+
+  for (auto i: to_delete) {
+    blasts.erase(blasts.begin() + i);
   }
 }
 

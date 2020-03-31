@@ -12,13 +12,24 @@ class Asteroid
     std::vector<Vec2<double>> points;
     Vec2<double> center;
     double current_size;
+    double health;
 
   public:
-    bool detect_inter          (const Vec2<double>&, const Vec2<double>&);
-    void draw_asteroid         (const std::shared_ptr<SDL_Renderer>&);
-    void split_asteroid        (void);
-    void detect_collision_ship (std::vector<std::shared_ptr<blast>>&);
-         Asteroid              (int, double, double, double);
-         Asteroid              (int x, Vec2<double> v, int y): Asteroid(x, v.x, v.y, y) {};
+    bool             detect_inter          (const Vec2<double>&, const Vec2<double>&);
+    void             draw_asteroid         (const std::shared_ptr<SDL_Renderer>&);
+    inline double    get_health            (void) {
+                       return this->health;
+    };
+    inline double    get_size              (void) {
+                       return this->current_size;
+    }
+    inline Vec2<double>     
+                     get_center            (void) {
+                       return this->center;
+    };
+    void             detect_collision_ship (std::vector<std::shared_ptr<blast>>&);
+                     Asteroid              (int, double, double, double);
+                     Asteroid              (int x, Vec2<double> v, int y): 
+                                                  Asteroid(x, v.x, v.y, y) {};
 };
 #endif 
