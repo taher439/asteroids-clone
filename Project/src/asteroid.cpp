@@ -20,6 +20,9 @@ Asteroid::Asteroid(int vertices, double x, double y, double size)
   this->center.x = x;
   this->center.y = y;
   this->direction = this->init_direction();
+  this->fake_center.x = x;
+  this->fake_center.y = y;
+  this->has_fake_center = false;
   this->speed = 1; // TODO: modify speed
   double radius, angle, step, r, sp;
    
@@ -45,7 +48,6 @@ Asteroid::Asteroid(int vertices, double x, double y, double size)
               << "polygon y: " 
               << tmp_v.y << std::endl;
 #endif
-    // this->points.emplace_back(tmp_v);
     this->points.emplace_back(tmp_v - this->center);
   }
 }
@@ -57,32 +59,15 @@ Asteroid::init_direction()
   return Vec2<double> (cos(angle), sin(angle));
 }
 
-void 
-Asteroid::draw_asteroid(const std::shared_ptr<SDL_Renderer>& rend) 
+void
+Asteroid::draw_from_center(const std::shared_ptr<SDL_Renderer>& rend, const Vec2<double>& center)
 {
-  // auto prev = this->points[0];
-  // auto size = this->points.size();
-  
-  // for (int i = 1; i < size; i++) {
-  //   SDL_wrapper::draw_line(rend, 
-  //                          prev.x,
-  //                          prev.y,
-  //                          this->points[i].x,
-  //                          this->points[i].y);
-  //   prev = this->points[i];
-  // }
-
-  // SDL_wrapper::draw_line(rend, 
-  //                        this->points[size - 1].x,
-  //                        this->points[size - 1].y,
-  //                        this->points[0].x,
-  //                        this->points[0].y);
-  auto prev = this->points[0] + this->center;
+  auto prev = this->points[0] + center;
   auto first = prev;
   auto size = this->points.size();
 
   for (int i = 1; i < size; i++) {
-    auto curr = this->points[i] + this->center;
+    auto curr = this->points[i] + center;
     SDL_wrapper::draw_line( rend,
                             prev.x, prev.y,
                             curr.x, curr.y);
@@ -94,14 +79,55 @@ Asteroid::draw_asteroid(const std::shared_ptr<SDL_Renderer>& rend)
 }
 
 void 
-Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts) 
+Asteroid::draw_asteroid(const std::shared_ptr<SDL_Renderer>& rend) 
 {
-  double dx, dy, dist; 
+  bool at_least_one_out_flag = false;
+  bool all_out_flag = true;
+  Vec2<int> side(0,0); // used to know on which side we went out of the screen
+  for (auto p : this->points) {
+    if (this->point_in_screen(p + this->center, side) ) {
+      // at least one point was still in screen
+      all_out_flag = false;
+    } else {
+      at_least_one_out_flag = true;
+    }
+  }
+
+  if (at_least_one_out_flag) {
+    // if at least one point is out of the screen
+    if (!this->has_fake_center) {
+      this->has_fake_center = true;
+      this->fake_center.x -= 640 * side.x;
+      this->fake_center.y -= 480 * side.y;
+    }
+  } 
+  if (all_out_flag) {
+    // // all the points are back in the screen from the other side
+    this->has_fake_center = false;
+    // reset fake center position
+    this->center = this->fake_center;
+  }
+
+  this->draw_from_center(rend, this->center);
+  if (this->has_fake_center) {
+    this->draw_from_center(rend, this->fake_center);
+  }
+}
+
+void 
+Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts)
+{
+  double dist_center, dist_fake_center; 
+  Vec2<double> d1, d2;
   for (auto s = blasts.begin(); s != blasts.end(); ++s) {
-    dx = abs(this->center.x - (*s)->loc.x);
-    dy = abs(this->center.y - (*s)->loc.y);
-    dist = dx * dx + dy * dy;
-    if (dist <= this->current_size * this->current_size) {
+    d1 = Vec2<double>(abs(this->center.x - (*s)->loc.x), 
+                      abs(this->center.y - (*s)->loc.y));
+    d2 = Vec2<double>(abs(this->fake_center.x - (*s)->loc.x), 
+                      abs(this->fake_center.y - (*s)->loc.y));
+    dist_center = d1.x * d1.x + d1.y * d1.y;
+    dist_fake_center = d2.x * d2.x + d2.y * d2.y;
+    if (dist_center <= this->current_size * this->current_size
+        || dist_fake_center <= this->current_size * this->current_size ) {
       #ifdef DEBUG
         std::cout << "\033[1;31mbold [*] collision detected\033[0m\n" << std::endl;
       #endif
@@ -114,29 +140,40 @@ Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts)
 bool 
 Asteroid::detect_inter(const Vec2<double>& A, const Vec2<double>& B)
 {
-  for (auto i: this->points)    
+  for (auto i: this->points)
     if (dist(A, B, i+this->center))
     return true;
   return false;
 }
 
-void 
-Asteroid::wrap_asteroid_coord (Vec2<double>& v) 
+bool 
+Asteroid::point_in_screen (const Vec2<double>& v, Vec2<int>& side)
 { // TODO: use globals for screen size
-  if (v.x > 640) 
-    v.x = 0;
-  if (v.x < 0) 
-    v.x = 640;
+  // side vector represent the screen side overshot
+  bool in_flag = true;
+  if (v.x > 640) {
+    in_flag = false;
+    side.x = 1;
+  }
+  if (v.x < 0) {
+    in_flag = false;
+    side.x = -1;
+  }
   
-  if (v.y > 480) 
-    v.y = 0;
-  if (v.y < 0) 
-    v.y = 480;
+  if (v.y > 480) {
+    in_flag = false;
+    side.y = 1;
+  }
+  if (v.y < 0) {
+    in_flag = false;
+    side.y = -1;
+  }
+  return in_flag;
 }
 
 void
 Asteroid::move_asteroid(void)
 {
-  this->center += this->direction;
-  this->wrap_asteroid_coord(this->center);
+  this->center += this->direction * this->speed;
+  this->fake_center += this->direction * this->speed;
 }
