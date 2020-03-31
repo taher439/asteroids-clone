@@ -13,6 +13,7 @@
 #include <thread>
 #include <random>
 #include <mutex>
+#include <list>
 
 #define PI 3.14159265
 #ifdef AZERTY
@@ -59,6 +60,14 @@ class Vec2 {
 
     inline Vec2<T> operator*(const T& val) const {
       return Vec2(this->x * val, this->y * val);
+    }
+
+    inline Vec2<T> operator+(const T& val) const {
+      return Vec2(this->x + val, this->y + val);
+    }
+
+    inline Vec2<T> operator-(const T& val) const {
+      return Vec2(this->x - val, this->y - val);
     }
 
     inline Vec2<T>& operator += (const Vec2<T>& v) {
@@ -165,7 +174,7 @@ class Game
     std::shared_ptr<SDL_Window>   win;
     std::shared_ptr<SDL_Surface>  surf;
     std::shared_ptr<SDL_Renderer> rend;
-    std::shared_ptr<SDL_Event> ev;
+    std::shared_ptr<SDL_Event>    ev;
     std::vector<std::shared_ptr<Asteroid>> active_asteroids;
     std::vector<std::shared_ptr<Player>>   players;
 
@@ -211,5 +220,6 @@ class Game
                                                   SCREEN_WIDTH(width), SCREEN_HEIGHT(height) {}
     
     void                 proc_input            (void);
+    int                  split_asteroid        (Vec2<double>, double);
 };
 #endif 

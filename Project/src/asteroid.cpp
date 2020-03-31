@@ -19,6 +19,7 @@ Asteroid::Asteroid(int vertices, double x, double y, double size)
 {
   this->center.x = x;
   this->center.y = y;
+  this->health = 100;
   this->direction = this->init_direction();
   this->fake_center.x = x;
   this->fake_center.y = y;
@@ -118,12 +119,13 @@ void
 Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts)
 {
   double dist_center, dist_fake_center; 
+  std::list<int>  to_delete;
   Vec2<double> d1, d2;
-  for (auto s = blasts.begin(); s != blasts.end(); ++s) {
-    d1 = Vec2<double>(abs(this->center.x - (*s)->loc.x), 
-                      abs(this->center.y - (*s)->loc.y));
-    d2 = Vec2<double>(abs(this->fake_center.x - (*s)->loc.x), 
-                      abs(this->fake_center.y - (*s)->loc.y));
+  for (int i = 0; i < blasts.size(); i++) {
+    d1 = Vec2<double>(abs(this->center.x - blasts[i]->loc.x), 
+                      abs(this->center.y - blasts[i]->loc.y));
+    d2 = Vec2<double>(abs(this->fake_center.x - blasts[i]->loc.x), 
+                      abs(this->fake_center.y - blasts[i]->loc.y));
     dist_center = d1.x * d1.x + d1.y * d1.y;
     dist_fake_center = d2.x * d2.x + d2.y * d2.y;
     if (dist_center <= this->current_size * this->current_size
@@ -131,9 +133,14 @@ Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts)
       #ifdef DEBUG
         std::cout << "\033[1;31mbold [*] collision detected\033[0m\n" << std::endl;
       #endif
-      blasts.erase(s);
-      s--;
+      if (this->health > 0)
+        this->health -= 25;
+      to_delete.emplace_back(i);
     }
+  }
+
+  for (auto i: to_delete) {
+    blasts.erase(blasts.begin() + i);
   }
 }
 

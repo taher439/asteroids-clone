@@ -3,3 +3,8 @@ How to build project:
   cd build
   cmake ../
   make -j4
+
+run: 
+  ./main 
+run with 2 player:
+  ./main -m

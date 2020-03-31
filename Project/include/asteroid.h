@@ -13,13 +13,22 @@ class Asteroid
     Vec2<double> center;
     Vec2<double> fake_center;
     bool has_fake_center;
-    double current_size;
+    double current_size, health, speed;
     Vec2<double> direction;
-    double speed;
 
   public:
-    bool detect_inter          (const Vec2<double>&, const Vec2<double>&);
-    void draw_asteroid         (const std::shared_ptr<SDL_Renderer>&);
+    bool             detect_inter          (const Vec2<double>&, const Vec2<double>&);
+    void             draw_asteroid         (const std::shared_ptr<SDL_Renderer>&);
+    inline double    get_health            (void) {
+                       return this->health;
+    };
+    inline double    get_size              (void) {
+                       return this->current_size;
+    }
+    inline Vec2<double>     
+                     get_center            (void) {
+                       return this->center;
+    };
     void split_asteroid        (void);
     void detect_collision_ship (std::vector<std::shared_ptr<blast>>&);
     void move_asteroid         (void);

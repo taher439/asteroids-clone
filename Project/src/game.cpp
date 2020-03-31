@@ -26,7 +26,7 @@ Game::init(int asteroid_num, bool mp)
   for (int i = 0; i < this->total_asteroids; i++) {
     center.x = Rand_gen<double>::rand_num(0, SCREEN_WIDTH);
     center.y = Rand_gen<double>::rand_num(0, SCREEN_HEIGHT);
-    this->active_asteroids.push_back(std::make_shared<Asteroid>(20, center, MID));
+    this->active_asteroids.push_back(std::make_shared<Asteroid>(20, center, BIG));
   }
 }
 
@@ -141,6 +141,11 @@ Game::proc_input(void)
     this->players[1]->hdl.ev = this->ev;
   }
 
+  int r = 0;
+  Vec2<double> tmp_v;
+  double size;
+  std::list<int>  to_delete;
+
   while(!quit) { 
     frame_start = SDL_GetTicks();
     SDL_SetRenderDrawColor(rend.get(), 0, 0, 0, 255);
@@ -178,17 +183,33 @@ Game::proc_input(void)
         p->draw_ship(this->rend, p->hdl.thrust);
         p->draw_fire(this->rend);
 
-        for (auto a: this->active_asteroids) {
+        for (int i = 0; i < this->active_asteroids.size(); i++) {
+          auto a = this->active_asteroids[i];
+          if (a == nullptr) continue;
           a->detect_collision_ship(p->blasts);
           a->draw_asteroid(this->rend);
           p->asteroid_collision(a);
+          if (a->get_health() == 0) {
+            size = a->get_size();
+            tmp_v = a->get_center();
+            this->split_asteroid(tmp_v, size);
+            to_delete.emplace_back(i);
+            #ifdef DEBUG
+            std::cout << "index to delete: " << r << std::endl;
+            #endif
+          }
           a->move_asteroid();
         }
+
+        for (auto i: to_delete) {
+          this->active_asteroids.erase(this->active_asteroids.begin() + i);
+        }
+
+        to_delete.clear();
     //framerate limit
       frame_time = SDL_GetTicks() - frame_start;
       if (frame_delay > frame_time) 
         SDL_Delay(frame_delay - frame_time);
-   
     }
     SDL_RenderPresent(rend.get());
   }
@@ -196,4 +217,20 @@ Game::proc_input(void)
   if (quit) {
   this->kill();
   }
+}
+
+int
+Game::split_asteroid(Vec2<double> v, double current_size)
+{
+  if (current_size == BIG) {
+    this->active_asteroids.push_back(std::make_shared<Asteroid>(20, v + BIG, MID));
+    this->active_asteroids.push_back(std::make_shared<Asteroid>(20, v - BIG, MID));
+  }
+  else if (current_size == MID) {
+    this->active_asteroids.push_back(std::make_shared<Asteroid>(5, v + MID, SMALL));
+    this->active_asteroids.push_back(std::make_shared<Asteroid>(5, v - MID, SMALL));
+    this->active_asteroids.push_back(std::make_shared<Asteroid>(5, v - MID, SMALL));
+    this->active_asteroids.push_back(std::make_shared<Asteroid>(5, v + MID, SMALL));
+  }
+  return 0;
 }
