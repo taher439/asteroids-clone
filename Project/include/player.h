@@ -20,7 +20,8 @@ class Player
     std::vector<std::shared_ptr<blast>>  blasts;
     sdl_event_handler hdl;
     bool second_p;
-
+    inline int            get_health           () 
+                            {return this->lives;}
     inline void           set_angle            (double a)
                             {this->angle = a;}
 
@@ -70,7 +71,7 @@ class Player
                             this->SCREEN_HEIGHT = height;
                             this->SCREEN_WIDTH = width;
                             this->center     = Vec2<double>(width / 2 - 8, height / 2 - 8);
-                            this->thrust_vec = Vec2<double>();
+                            this->thrust_vec = Vec2<double>(0, 0);
                             this->hdl.sprite_angle = 0;
                             this->hdl.thrust = false;
                             this->hdl.FPS = 60;
@@ -111,7 +112,7 @@ class Player
                             if (this->center.y < 0) 
                               this->center.y = this->SCREEN_HEIGHT;
                           }
-    void                 add_blast            (const double&);
+    void                 add_blast            ();
     void                 draw_fire            (const std::shared_ptr<SDL_Renderer>&);
     void                 asteroid_collision   (const std::shared_ptr<Asteroid>&);
     void                 draw_ship            (const std::shared_ptr<SDL_Renderer>&,

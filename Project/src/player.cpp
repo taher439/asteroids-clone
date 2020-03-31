@@ -36,11 +36,11 @@ Player::draw_ship(const std::shared_ptr<SDL_Renderer>& rend, const bool& thrusti
 }
 
 void 
-Player::add_blast(const double& angle)
+Player::add_blast()
 {
   std::shared_ptr<blast> tmp = std::make_shared<blast>();
   tmp->loc = Vec2<double>(this->center);
-  tmp->angle = angle;
+  tmp->angle = this->angle;
   #ifdef DEBUG
     std::cout << "[*]vector blast tmp ";
     tmp->loc.print();
@@ -51,18 +51,20 @@ Player::add_blast(const double& angle)
 void 
 Player::draw_fire(const std::shared_ptr<SDL_Renderer>& rend)
 {
+    if (this->blasts.empty()) {
+        return;
+    }
+
     for (auto s: this->blasts) {
-        s->loc.x += cos(s->angle - 20.4) * 5;
-        s->loc.y += sin(s->angle - 20.4) * 5;
-        SDL_wrapper::draw_point(rend, s->loc.x, s->loc.y);
+        s->loc.x += cos(s->angle - 20.45) * 5;
+        s->loc.y += sin(s->angle - 20.45) * 5;
+        SDL_wrapper::draw_point(rend, (int) s->loc.x, (int) s->loc.y);
         #ifdef DEBUG
             std::cout << "current angle " << angle << std::endl; 
         #endif
     }
 
     for (auto s = this->blasts.begin(); s != this->blasts.end(); ++s) {
-        if (this->blasts.size() == 0)
-            return;
          #ifdef DEBUG
             std::cout << "[!] blast vector size " 
                       << this->blasts.size() << std::endl; 
@@ -72,13 +74,12 @@ Player::draw_fire(const std::shared_ptr<SDL_Renderer>& rend)
             || ((*s)->loc.x < 0) 
             || ((*s)->loc.y > this->SCREEN_HEIGHT) 
             || ((*s)->loc.y < 0)) {
-            SDL_wrapper::draw_point(rend, (*s)->loc.x, (*s)->loc.y);
             this->blasts.erase(s);
             s--;
         }
     }
 }
-
+ 
 void 
 Player::asteroid_collision(const std::shared_ptr<Asteroid>& a)
 {
@@ -89,6 +90,14 @@ Player::asteroid_collision(const std::shared_ptr<Asteroid>& a)
 
   if (a->detect_inter(this->A, this->B) || 
       a->detect_inter(this->C, this->D) || 
-      a->detect_inter(this->E, this->F))
-        this->thrust_vec *= -1;
+      a->detect_inter(this->E, this->F)) {
+        this->center.x = SCREEN_WIDTH / 2 - 8;
+        this->center.y = SCREEN_HEIGHT / 2 - 8;
+        this->thrust_vec.x = 0;
+        this->thrust_vec.y = 0;
+        this->lives -= 1;
+#ifdef DEBUG
+        std::cout << "\nplayer lives: " << this->lives << std::endl;
+#endif 
+    }
 }

@@ -177,6 +177,7 @@ class Game
     std::shared_ptr<SDL_Event>    ev;
     std::vector<std::shared_ptr<Asteroid>> active_asteroids;
     std::vector<std::shared_ptr<Player>>   players;
+    int current_level;
 
     enum state {
       MENU,

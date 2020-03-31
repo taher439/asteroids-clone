@@ -23,7 +23,7 @@ main(int argc, char *argv[])
     }
   }
   std::unique_ptr<Game>    test = std::make_unique<Game>(640, 480);
-  test->init(7, multiplayer);
+  test->init(1, multiplayer);
   //
   test->proc_input();
 }

@@ -39,7 +39,7 @@ std::shared_ptr<SDL_Renderer>
 SDL_wrapper::creat_rend(const std::shared_ptr<SDL_Window>& win) 
 {
   std::shared_ptr<SDL_Renderer> rend = 
-    sdl_shared(SDL_CreateRenderer(win.get(), -1, 0));
+    sdl_shared(SDL_CreateRenderer(win.get(), 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
   
   if (rend == nullptr) 
     ret_err_SDL("Renderer could not be created! SDL_Error");

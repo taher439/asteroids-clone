@@ -100,9 +100,9 @@ Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts)
   double dx, dy, dist; 
   std::list<int>  to_delete;
   
-  for (int i = 0; i < blasts.size(); i++) {
-    dx = abs(this->center.x - blasts[i]->loc.x);
-    dy = abs(this->center.y - blasts[i]->loc.y);
+  for (auto s = blasts.begin(); s != blasts.end(); ++s) {
+    dx = abs(this->center.x - (*s)->loc.x);
+    dy = abs(this->center.y - (*s)->loc.y);
     dist = dx * dx + dy * dy;
     if (dist <= this->current_size * this->current_size) {
       #ifdef DEBUG
@@ -110,12 +110,9 @@ Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts)
       #endif
       if (this->health > 0)
         this->health -= 25;
-      to_delete.emplace_back(i);
+      blasts.erase(s);
+      s--;
     }
-  }
-
-  for (auto i: to_delete) {
-    blasts.erase(blasts.begin() + i);
   }
 }
 
@@ -123,7 +120,7 @@ bool
 Asteroid::detect_inter(const Vec2<double>& A, const Vec2<double>& B)
 {
   for (auto i: this->points)    
-    if (dist(A, B, i+this->center))
+    if (dist(A, B, i + this->center))
     return true;
   return false;
 }
