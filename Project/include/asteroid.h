@@ -11,8 +11,8 @@ class Asteroid
   private:
     std::vector<Vec2<double>> points;
     Vec2<double> center;
-    double current_size;
-    double health;
+    double current_size, health, speed;
+    Vec2<double> direction;
 
   public:
     bool             detect_inter          (const Vec2<double>&, const Vec2<double>&);
@@ -27,9 +27,16 @@ class Asteroid
                      get_center            (void) {
                        return this->center;
     };
-    void             detect_collision_ship (std::vector<std::shared_ptr<blast>>&);
-                     Asteroid              (int, double, double, double);
-                     Asteroid              (int x, Vec2<double> v, int y): 
-                                                  Asteroid(x, v.x, v.y, y) {};
+    void split_asteroid        (void);
+    void detect_collision_ship (std::vector<std::shared_ptr<blast>>&);
+    void move_asteroid         (void);
+    void wrap_asteroid_coord   (Vec2<double>&);
+         Asteroid              (int, double, double, double);
+         Asteroid              (int x, Vec2<double> v, int y): Asteroid(x, v.x, v.y, y) {};
+
+  private:
+    Vec2<double> init_direction(void);
+
+
 };
 #endif 

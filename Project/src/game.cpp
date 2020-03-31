@@ -198,6 +198,7 @@ Game::proc_input(void)
             std::cout << "index to delete: " << r << std::endl;
             #endif
           }
+          a->move_asteroid();
         }
 
         for (auto i: to_delete) {

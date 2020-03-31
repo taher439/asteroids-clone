@@ -20,6 +20,8 @@ Asteroid::Asteroid(int vertices, double x, double y, double size)
   this->center.x = x;
   this->center.y = y;
   this->health = 100;
+  this->direction = this->init_direction();
+  this->speed = 1; // TODO: modify speed
   double radius, angle, step, r, sp;
    
   radius = size;
@@ -44,30 +46,52 @@ Asteroid::Asteroid(int vertices, double x, double y, double size)
               << "polygon y: " 
               << tmp_v.y << std::endl;
 #endif
-    this->points.emplace_back(tmp_v);
+    // this->points.emplace_back(tmp_v);
+    this->points.emplace_back(tmp_v - this->center);
   }
+}
+
+Vec2<double>
+Asteroid::init_direction()
+{
+  double angle = Rand_gen<double>::rand_num(0, 2) * PI;
+  return Vec2<double> (cos(angle), sin(angle));
 }
 
 void 
 Asteroid::draw_asteroid(const std::shared_ptr<SDL_Renderer>& rend) 
 {
-  auto prev = this->points[0];
-  auto size = this->points.size();
+  // auto prev = this->points[0];
+  // auto size = this->points.size();
   
-  for (int i = 1; i < size; i++) {
-    SDL_wrapper::draw_line(rend, 
-                           prev.x,
-                           prev.y,
-                           this->points[i].x,
-                           this->points[i].y);
-    prev = this->points[i];
-  }
+  // for (int i = 1; i < size; i++) {
+  //   SDL_wrapper::draw_line(rend, 
+  //                          prev.x,
+  //                          prev.y,
+  //                          this->points[i].x,
+  //                          this->points[i].y);
+  //   prev = this->points[i];
+  // }
 
-  SDL_wrapper::draw_line(rend, 
-                         this->points[size - 1].x,
-                         this->points[size - 1].y,
-                         this->points[0].x,
-                         this->points[0].y);
+  // SDL_wrapper::draw_line(rend, 
+  //                        this->points[size - 1].x,
+  //                        this->points[size - 1].y,
+  //                        this->points[0].x,
+  //                        this->points[0].y);
+  auto prev = this->points[0] + this->center;
+  auto first = prev;
+  auto size = this->points.size();
+
+  for (int i = 1; i < size; i++) {
+    auto curr = this->points[i] + this->center;
+    SDL_wrapper::draw_line( rend,
+                            prev.x, prev.y,
+                            curr.x, curr.y);
+    prev = curr;
+  }
+  SDL_wrapper::draw_line( rend,
+                          prev.x, prev.y,
+                          first.x, first.y);
 }
 
 void 
@@ -99,7 +123,28 @@ bool
 Asteroid::detect_inter(const Vec2<double>& A, const Vec2<double>& B)
 {
   for (auto i: this->points)    
-    if (dist(A, B, i))
+    if (dist(A, B, i+this->center))
     return true;
   return false;
+}
+
+void 
+Asteroid::wrap_asteroid_coord (Vec2<double>& v) 
+{ // TODO: use globals for screen size
+  if (v.x > 640) 
+    v.x = 0;
+  if (v.x < 0) 
+    v.x = 640;
+  
+  if (v.y > 480) 
+    v.y = 0;
+  if (v.y < 0) 
+    v.y = 480;
+}
+
+void
+Asteroid::move_asteroid(void)
+{
+  this->center += this->direction;
+  this->wrap_asteroid_coord(this->center);
 }
