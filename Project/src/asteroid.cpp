@@ -1,4 +1,5 @@
 #include "asteroid.h"
+#include "templates.h"
 #include "sdl_wrapper.h"
 
 static inline double 
@@ -20,7 +21,7 @@ Asteroid::Asteroid(int vertices, double x, double y, double size)
   this->center.x = x;
   this->center.y = y;
   this->health = 100;
-  this->direction = this->init_direction();
+  this->direction = Direction::normed();
   this->speed = 1; // TODO: modify speed
   double radius, angle, step, r, sp;
    
@@ -46,38 +47,13 @@ Asteroid::Asteroid(int vertices, double x, double y, double size)
               << "polygon y: " 
               << tmp_v.y << std::endl;
 #endif
-    // this->points.emplace_back(tmp_v);
     this->points.emplace_back(tmp_v - this->center);
   }
-}
-
-Vec2<double>
-Asteroid::init_direction()
-{
-  double angle = Rand_gen<double>::rand_num(0, 2) * PI;
-  return Vec2<double> (cos(angle), sin(angle));
 }
 
 void 
 Asteroid::draw_asteroid(const std::shared_ptr<SDL_Renderer>& rend) 
 {
-  // auto prev = this->points[0];
-  // auto size = this->points.size();
-  
-  // for (int i = 1; i < size; i++) {
-  //   SDL_wrapper::draw_line(rend, 
-  //                          prev.x,
-  //                          prev.y,
-  //                          this->points[i].x,
-  //                          this->points[i].y);
-  //   prev = this->points[i];
-  // }
-
-  // SDL_wrapper::draw_line(rend, 
-  //                        this->points[size - 1].x,
-  //                        this->points[size - 1].y,
-  //                        this->points[0].x,
-  //                        this->points[0].y);
   auto prev = this->points[0] + this->center;
   auto first = prev;
   auto size = this->points.size();

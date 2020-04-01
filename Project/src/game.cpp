@@ -191,28 +191,33 @@ Game::proc_input(void)
       p->draw_ship(this->rend, p->hdl.thrust);
       p->draw_fire(this->rend);
       
-      for (int i = 0; i < this->active_asteroids.size(); i++) {
-          auto a = this->active_asteroids[i];
-          if (a == nullptr) continue;
-          a->detect_collision_ship(p->blasts);
-          a->draw_asteroid(this->rend);
-          p->asteroid_collision(a);
+      for (int i = 0; i < this->active_asteroids.size(); i++) 
+      {
+        auto a = this->active_asteroids[i];
+        if (a == nullptr) continue;
+        a->detect_collision_ship(p->blasts);
+        a->draw_asteroid(this->rend);
+        p->asteroid_collision(a);
+        this->particles(this->rend);
 
-          if (a->get_health() == 0) {
-            size = a->get_size();
-            tmp_v = a->get_center();
-            this->split_asteroid(tmp_v, size);
-            to_delete.emplace_back(i);
-            #ifdef DEBUG
-            std::cout << "index to delete: " << r << std::endl;
-            #endif
-          }
-          a->move_asteroid();
+        if (a->get_health() == 0) {
+          size = a->get_size();
+          tmp_v = a->get_center();
+          this->particle_clouds.push_back(this->generate_particles(tmp_v, 50));
+          this->split_asteroid(tmp_v, size);
+          to_delete.emplace_back(i);
+          #ifdef DEBUG
+          std::cout << "index to delete: " << r << std::endl;
+          #endif
         }
+        a->move_asteroid();
+      }
 
-        for (auto i: to_delete)
-          this->active_asteroids.erase(this->active_asteroids.begin() + i);
-        to_delete.clear();
+      for (auto i: to_delete) {         
+        this->active_asteroids.erase(this->active_asteroids.begin() + i);
+      }
+          
+      to_delete.clear();
     //framerate limit
       frame_time = SDL_GetTicks() - frame_start;
       if (frame_delay > frame_time) 
@@ -266,4 +271,35 @@ Game::split_asteroid(Vec2<double> v, double current_size)
     this->active_asteroids.push_back(std::make_shared<Asteroid>(5, v - MID, SMALL));
   }
   return 0;
+}
+
+std::shared_ptr<Particle_container>
+Game::generate_particles (Vec2<double> pos, int count)
+{
+  auto pc = std::make_shared<Particle_container>();
+  for (int i = 0; i < count; i++)
+  {
+    auto p = std::make_shared<Ephemeral_particle>(pos, 30, 50);
+    pc->add_particle(p);
+  }
+  return pc;
+}
+
+void
+Game::particles(const std::shared_ptr<SDL_Renderer>& rend)
+{
+  for (auto pc = this->particle_clouds.begin(); pc != this->particle_clouds.end(); pc++)
+  {
+    (*pc)->step_all();
+    (*pc)->draw_all(rend);
+    (*pc)->clean_all();
+    if ( (*pc)->is_empty() )
+    { 
+      #ifdef DEBUG
+      std::cout << "deleting particle cloud" << std::endl;
+      #endif
+      this->particle_clouds.erase(pc);
+      pc--;
+    }
+  }
 }

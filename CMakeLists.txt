@@ -28,10 +28,13 @@ set(SRC_FILES_
     ${SOURCE_DIR_}/asteroid.cpp  
     ${SOURCE_DIR_}/game.cpp  
     ${SOURCE_DIR_}/main.cpp  
+    ${SOURCE_DIR_}/particle.cpp  
     ${SOURCE_DIR_}/player.cpp  
     ${SOURCE_DIR_}/sdl_wrapper.cpp
+    ${INCLUDE_DIR_}/templates.h
     ${INCLUDE_DIR_}/asteroid.h
     ${INCLUDE_DIR_}/game.h
+    ${INCLUDE_DIR_}/particle.h
     ${INCLUDE_DIR_}/player.h
     ${INCLUDE_DIR_}/sdl_wrapper.h)
 
