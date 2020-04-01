@@ -191,6 +191,8 @@ Game::proc_input(void)
       p->draw_ship(this->rend, p->hdl.thrust);
       p->draw_fire(this->rend);
       
+      this->particles(this->rend);
+      
       for (int i = 0; i < this->active_asteroids.size(); i++) 
       {
         auto a = this->active_asteroids[i];
@@ -198,7 +200,6 @@ Game::proc_input(void)
         a->detect_collision_ship(p->blasts);
         a->draw_asteroid(this->rend);
         p->asteroid_collision(a);
-        this->particles(this->rend);
 
         if (a->get_health() == 0) {
           size = a->get_size();

@@ -33,7 +33,6 @@ class Particle
 class Ephemeral_particle: public Particle
 {
   private:
-    std::unique_ptr<Particle> p;
     int time_to_live = 0;
 
   public:
