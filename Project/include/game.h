@@ -67,8 +67,8 @@ class Game
     std::shared_ptr<SDL_Surface>  surf;
     std::shared_ptr<SDL_Renderer> rend;
     std::shared_ptr<SDL_Event>    ev;
-    std::vector<std::shared_ptr<Asteroid>> active_asteroids;
-    std::vector<std::shared_ptr<Particle_container>> particle_clouds;
+    std::list<std::shared_ptr<Asteroid>> active_asteroids;
+    std::list<std::shared_ptr<Particle_container>> particle_clouds;
     std::vector<std::shared_ptr<Player>>   players;
     int current_level;
 
@@ -118,5 +118,6 @@ class Game
     std::shared_ptr
     <Particle_container>  generate_particles    (Vec2<double>, int);
     void                  particles             (const std::shared_ptr<SDL_Renderer>& rend);
+    Vec2<double>          generate_asteroid_pos (void);
 };
 #endif 

@@ -38,7 +38,6 @@ class Asteroid
 
   private:
     void wrap_asteroid_coord (Vec2<double>& v);
-    Vec2<double> init_direction(void);
     void draw_from_center      (const std::shared_ptr<SDL_Renderer>&, const Vec2<double>&);
 
 

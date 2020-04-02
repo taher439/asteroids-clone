@@ -78,9 +78,21 @@ class Vec2 {
     }
   
     void print() {
-#ifdef DEBUG
-      std::cout << this->x << " " << this->y << std::endl;
-#endif
+      #ifdef DEBUG
+            std::cout << this->x << " " << this->y << std::endl;
+      #endif
+    }
+
+    static inline T dist(const Vec2<T>& a, const Vec2<T>& b) 
+    {
+      return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+    }
+
+    static inline bool dist( const Vec2<T>& a, 
+               const Vec2<T>& b, 
+               const Vec2<T>& c) 
+    {
+      return round(dist(a, c) + dist(c, b)) == round(dist(a, b));
     }
 };
 

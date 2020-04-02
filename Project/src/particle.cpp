@@ -84,7 +84,7 @@ void
 Particle_container::add_particle(std::shared_ptr<Particle> p)
 {
   this->total_particles++;
-  this->particles.push_back(p);
+  this->particles.emplace_back(p);
 }
 
 void 
@@ -98,9 +98,6 @@ Particle_container::step_all (void)
 void 
 Particle_container::draw_all (const std::shared_ptr<SDL_Renderer>& rend)
 {
-  #ifdef DEBUG
-    std::cout << "this is a cloud of "<< this->particles.size() << " particles" << std::endl;
-  #endif
   for (auto p = this->particles.begin(); p != this->particles.end(); p++) {
     (*p)->draw_particle(rend);
   }
@@ -111,9 +108,9 @@ Particle_container::clean_all (void)
 {
   for (auto p = this->particles.begin(); p != this->particles.end(); p++) {
     if ( !(*p)->is_active() ) {
-      this->particles.erase(p);
-      this->total_particles--;
+      p = this->particles.erase(p);
       p--;
+      this->total_particles--;
     }
   }
 }

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <SDL.h>
+#include<list>
 #include "templates.h"
 
 // class Color
@@ -24,10 +25,10 @@ class Particle
     Particle    (double x, double y): Particle(Vec2<double>(x, y)) {};
 
     virtual void step       (void);
-    void draw_particle      (const std::shared_ptr<SDL_Renderer>&);
-    void set_position       (Vec2<double>);
-    Vec2<double> get_position (void);
-    virtual bool is_active  (void);
+    virtual void draw_particle  (const std::shared_ptr<SDL_Renderer>&);
+    void set_position           (Vec2<double>);
+    Vec2<double> get_position   (void);
+    virtual bool is_active      (void);
 };
 
 class Ephemeral_particle: public Particle
@@ -39,7 +40,6 @@ class Ephemeral_particle: public Particle
     Ephemeral_particle   (void);
     Ephemeral_particle   (Vec2<double>, int, int);
 
-    void draw_particle   (const std::shared_ptr<SDL_Renderer>&);
     void step            (void) override;
     bool is_active       (void) override;
 };
@@ -48,7 +48,7 @@ class Particle_container
 {
   private:
     int total_particles = 0;
-    std::vector<std::shared_ptr<Particle>> particles;
+    std::list<std::shared_ptr<Particle>> particles;
 
   public:
     Particle_container();

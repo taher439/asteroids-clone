@@ -26,9 +26,10 @@ Game::init(int asteroid_num, bool mp)
   this->players.push_back(std::make_shared<Player>(640, 480));
 
   for (int i = 0; i < this->total_asteroids; i++) {
-    center.x = Rand_gen<double>::rand_num(0, SCREEN_WIDTH);
-    center.y = Rand_gen<double>::rand_num(0, SCREEN_HEIGHT);
-    this->active_asteroids.push_back(std::make_shared<Asteroid>(20, center, BIG));
+    // center.x = Rand_gen<double>::rand_num(0, SCREEN_WIDTH);
+    // center.y = Rand_gen<double>::rand_num(0, SCREEN_HEIGHT);
+    center = this->generate_asteroid_pos();
+    this->active_asteroids.emplace_back(std::make_shared<Asteroid>(20, center, BIG));
   }
 }
 
@@ -193,9 +194,10 @@ Game::proc_input(void)
       
       this->particles(this->rend);
       
-      for (int i = 0; i < this->active_asteroids.size(); i++) 
+    //   for (int i = 0; i < this->active_asteroids.size(); i++) 
+      for (auto i = this->active_asteroids.begin(); i != this->active_asteroids.end(); i++)
       {
-        auto a = this->active_asteroids[i];
+        auto a = (*i);
         if (a == nullptr) continue;
         a->detect_collision_ship(p->blasts);
         a->draw_asteroid(this->rend);
@@ -204,9 +206,11 @@ Game::proc_input(void)
         if (a->get_health() == 0) {
           size = a->get_size();
           tmp_v = a->get_center();
-          this->particle_clouds.push_back(this->generate_particles(tmp_v, 50));
+          this->particle_clouds.emplace_back(this->generate_particles(tmp_v, 50));
           this->split_asteroid(tmp_v, size);
-          to_delete.emplace_back(i);
+          // to_delete.emplace_back(i);
+          i = this->active_asteroids.erase(i);
+          i--;
           #ifdef DEBUG
           std::cout << "index to delete: " << r << std::endl;
           #endif
@@ -214,11 +218,12 @@ Game::proc_input(void)
         a->move_asteroid();
       }
 
-      for (auto i: to_delete) {         
-        this->active_asteroids.erase(this->active_asteroids.begin() + i);
-      }
+      // for (auto i: to_delete) {         
+      //   // this->active_asteroids.erase(this->active_asteroids.begin() + i);
+      //   this->active_asteroids.erase(i);
+      // }
           
-      to_delete.clear();
+      // to_delete.clear();
     //framerate limit
       frame_time = SDL_GetTicks() - frame_start;
       if (frame_delay > frame_time) 
@@ -227,13 +232,14 @@ Game::proc_input(void)
 
     //proceed to next level
 
-    if (active_asteroids.empty()) {
+    if (this->active_asteroids.empty()) {
       this->current_level++;
       this->total_asteroids *= this->current_level; 
       for (int i = 0; i < this->total_asteroids; i++) {
-        center.x = Rand_gen<double>::rand_num(0, SCREEN_WIDTH);
-        center.y = Rand_gen<double>::rand_num(0, SCREEN_HEIGHT);
-        this->active_asteroids.push_back(std::make_shared<Asteroid>(5, center, BIG));
+        // center.x = Rand_gen<double>::rand_num(0, SCREEN_WIDTH);
+        // center.y = Rand_gen<double>::rand_num(0, SCREEN_HEIGHT);
+        center = this->generate_asteroid_pos();
+        this->active_asteroids.emplace_back(std::make_shared<Asteroid>(5, center, BIG));
       }
     }
 
@@ -265,11 +271,11 @@ int
 Game::split_asteroid(Vec2<double> v, double current_size)
 {
   if (current_size == BIG) {
-    this->active_asteroids.push_back(std::make_shared<Asteroid>(20, v + BIG, MID));
+    this->active_asteroids.emplace_back(std::make_shared<Asteroid>(20, v + BIG, MID));
   }
   else if (current_size == MID) {
-    this->active_asteroids.push_back(std::make_shared<Asteroid>(5, v + MID, SMALL));
-    this->active_asteroids.push_back(std::make_shared<Asteroid>(5, v - MID, SMALL));
+    this->active_asteroids.emplace_back(std::make_shared<Asteroid>(5, v + MID, SMALL));
+    this->active_asteroids.emplace_back(std::make_shared<Asteroid>(5, v - MID, SMALL));
   }
   return 0;
 }
@@ -296,11 +302,32 @@ Game::particles(const std::shared_ptr<SDL_Renderer>& rend)
     (*pc)->clean_all();
     if ( (*pc)->is_empty() )
     { 
-      #ifdef DEBUG
-      std::cout << "deleting particle cloud" << std::endl;
-      #endif
-      this->particle_clouds.erase(pc);
+      pc = this->particle_clouds.erase(pc);
       pc--;
     }
   }
+}
+
+Vec2<double>
+Game::generate_asteroid_pos(void)
+{
+  Vec2<double> center;
+  Vec2<double> player_pos;
+  
+  // TODO : rework for multiplayer
+  center.x = Rand_gen<double>::rand_num(0, SCREEN_WIDTH);
+  center.y = Rand_gen<double>::rand_num(0, SCREEN_HEIGHT);
+  // std::cout << "center at pos" << center << std::endl;
+  for (auto i = this->players.begin(); i != this->players.end(); i++)
+  {
+    player_pos = (*i)->get_center();
+    // std::cout << "player at pos" << player_pos << std::endl;
+    if (Vec2<double>::dist(center, player_pos) < 3*BIG)
+    {
+      // moving asteroid center away from the player in a random direction
+      center += Direction::normed() * 4 * BIG;
+      // std::cout << "new center" << center << std::endl;
+    }
+  }
+  return center;
 }
