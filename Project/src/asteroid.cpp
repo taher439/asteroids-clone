@@ -1,19 +1,15 @@
 #include "asteroid.h"
-#include "templates.h"
+#include "player.h"
 #include "sdl_wrapper.h"
 
 
-Asteroid::Asteroid(int vertices, double x, double y, double size) 
+Asteroid::Asteroid(const std::shared_ptr<SDL_Renderer>& rend, int vertices, int height, int width) :
+Moving_object(rend, height, width)
 {
-  this->center.x = x;
-  this->center.y = y;
   this->health = 100;
-  this->direction = Direction::normed();
-  this->speed = 1; // TODO: modify speed
   double radius, angle, step, r, sp;
    
-  radius = size;
-  this->current_size = size;
+  radius = height/2;
   sp = 0.5 * radius; 
 
   step = 1.0 / vertices;
@@ -36,29 +32,11 @@ Asteroid::Asteroid(int vertices, double x, double y, double size)
 #endif
     this->points.emplace_back(tmp_v - this->center);
   }
+  this->create_texture(height, width);
 }
 
 void 
-Asteroid::draw_asteroid(const std::shared_ptr<SDL_Renderer>& rend) 
-{
-  auto prev = this->points[0] + this->center;
-  auto first = prev;
-  auto size = this->points.size();
-
-  for (int i = 1; i < size; i++) {
-    auto curr = this->points[i] + this->center;
-    SDL_wrapper::draw_line( rend,
-                            prev.x, prev.y,
-                            curr.x, curr.y);
-    prev = curr;
-  }
-  SDL_wrapper::draw_line( rend,
-                          prev.x, prev.y,
-                          first.x, first.y);
-}
-
-void 
-Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts) 
+Asteroid::detect_blast_collision(std::vector<std::shared_ptr<blast>>& blasts) 
 {
   double dx, dy, dist; 
   
@@ -66,7 +44,7 @@ Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts)
     dx = abs(this->center.x - (*s)->loc.x);
     dy = abs(this->center.y - (*s)->loc.y);
     dist = dx * dx + dy * dy;
-    if (dist <= this->current_size * this->current_size) {
+    if (dist <= (this->height/2) * (this->height/2)) {
       #ifdef DEBUG
         std::cout << "\033[1;31mbold [*] collision detected\033[0m\n" << std::endl;
       #endif
@@ -78,6 +56,26 @@ Asteroid::detect_collision_ship(std::vector<std::shared_ptr<blast>>& blasts)
   }
 }
 
+// kept for retro
+void 
+Asteroid::draw_asteroid() 
+{
+  auto prev = this->points[0] + this->center;
+  auto first = prev;
+  auto size = this->points.size();
+
+  for (int i = 1; i < size; i++) {
+    auto curr = this->points[i] + this->center;
+    SDL_wrapper::draw_line( this->rend,
+                            prev.x, prev.y,
+                            curr.x, curr.y);
+    prev = curr;
+  }
+  SDL_wrapper::draw_line( this->rend,
+                          prev.x, prev.y,
+                          first.x, first.y);
+}
+
 bool 
 Asteroid::detect_inter(const Vec2<double>& A, const Vec2<double>& B)
 {
@@ -87,23 +85,78 @@ Asteroid::detect_inter(const Vec2<double>& A, const Vec2<double>& B)
   return false;
 }
 
-void 
-Asteroid::wrap_asteroid_coord (Vec2<double>& v) 
-{ // TODO: use globals for screen size
-  if (v.x > 640) 
-    v.x = 0;
-  if (v.x < 0) 
-    v.x = 640;
-  
-  if (v.y > 480) 
-    v.y = 0;
-  if (v.y < 0) 
-    v.y = 480;
+void
+Asteroid::update(std::vector<std::shared_ptr<blast>>& blasts, const std::shared_ptr<Player>& players)
+{
+  this->move();
+  this->detect_blast_collision(blasts);
+  this->detect_player_collision(players);
 }
 
-void
-Asteroid::move_asteroid(void)
+void 
+Asteroid::create_texture (int height, int width)
 {
-  this->center += this->direction;
-  this->wrap_asteroid_coord(this->center);
+    this->texture = SDL_wrapper::create_texture(rend, height, width);
+    SDL_SetTextureBlendMode(this->texture.get(), SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(this->rend.get(), this->texture.get());
+
+    Vec2<double> texture_center = this->center - this->top_left;
+
+    auto prev = this->points[0] + texture_center;
+    auto first = prev;
+    auto size = this->points.size();
+
+    for (int i = 1; i < size; i++) {
+        auto curr = this->points[i] + texture_center;
+        SDL_wrapper::draw_line( this->rend,
+                                prev.x, prev.y,
+                                curr.x, curr.y);
+        prev = curr;
+    }
+    SDL_wrapper::draw_line( this->rend,
+                            prev.x, prev.y,
+                            first.x, first.y);
+
+    // draw blue texture box
+    // SDL_Rect r = {0, 0, height, width};
+    // SDL_SetRenderDrawColor(this->rend.get(), 0, 0, 255, 255);
+    // SDL_RenderDrawRect(this->rend.get(), &r);
+    // draw red hitbox
+    // SDL_SetRenderDrawColor(this->rend.get(), 255, 0, 0, 255);
+    // SDL_wrapper::draw_circle(this->rend, texture_center.x, texture_center.y, this->height/2);
+
+    SDL_SetRenderTarget(this->rend.get(), nullptr);
+}
+
+bool       
+Asteroid::has_type (std::string str)
+{   
+    if (str == "ASTEROID") {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void 
+Asteroid::detect_player_collision(const std::shared_ptr<Player>& p)
+{
+  auto ccw   = [](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C) 
+                {return (C.y - A.y) * (B.x - A.x) < (B.y-A.y) * (C.x-A.x);};
+  auto inter = [&](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C, Vec2<double>& D)
+                {ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D);};
+
+  if (this->detect_inter(p->A, p->B) || 
+      this->detect_inter(p->C, p->D) || 
+      this->detect_inter(p->E, p->F)) 
+  {
+    Vec2<double> new_center (SCREEN::SCREEN_WIDTH / 2 - 8, SCREEN::SCREEN_HEIGHT / 2 - 8);
+    p->set_center(std::move(new_center));
+    Vec2<double> new_thrust (0, 0);
+    p->set_thrust(std::move(new_thrust));
+    p->remove_health(1);
+    #ifdef DEBUG
+      std::cout << "\nplayer lives: " << p->get_health() << std::endl;
+    #endif 
+  }
 }

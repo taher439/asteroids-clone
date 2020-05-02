@@ -22,10 +22,13 @@ class SDL_wrapper
         inline SDL_wrapper(void) = default;
 
         static void       init             (void);
+        static void       ret_err_SDL      (const std::string&);
         static std::shared_ptr<SDL_Window>       
                           creat_win        (const int&, const int&);
         static std::shared_ptr<SDL_Renderer>       
                           creat_rend       (const std::shared_ptr<SDL_Window>&);
+        static std::shared_ptr<SDL_Texture>
+                          create_texture   (const std::shared_ptr<SDL_Renderer>&, int, int);
         static void       draw_color       (const std::shared_ptr<SDL_Renderer>&);
         static void       rend_copy_ex     (const std::shared_ptr<SDL_Renderer>&, 
                                             const std::shared_ptr<Player>&);
@@ -43,6 +46,11 @@ class SDL_wrapper
                                             const int&);
                                             
         static void       fill_screen      (const std::shared_ptr<SDL_Window>&);
+        inline static SDL_Surface* load_surface   (std::string const path) {return load_surface(path.c_str());};
+        static SDL_Surface* load_surface   (char const *);
+        static std::shared_ptr<SDL_Texture>
+                          load_texture     (const std::shared_ptr<SDL_Renderer>&, std::string const);
+        static void draw_circle            (const std::shared_ptr<SDL_Renderer>&, int32_t, int32_t, int32_t);
 };
 
 #endif

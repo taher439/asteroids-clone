@@ -2,6 +2,8 @@
 #define _PLAYER_H
 #include "game.h"
 
+class Asteroid;
+
 class Player 
 {
   private:
@@ -13,72 +15,49 @@ class Player
     std::shared_ptr<SDL_Surface> player_surf;
     std::shared_ptr<SDL_Rect>    dst, src;
     static constexpr double      ship_thrust = 5;
-    Vec2<double> thrust_vec, A, B, C, D, E, F;
     int lives = 3, score = 0;
+  public:
+    Vec2<double> thrust_vec, A, B, C, D, E, F;
 
   public:
     std::vector<std::shared_ptr<blast>>  blasts;
     sdl_event_handler hdl;
     bool second_p;
-    inline int            get_health           () 
-                            {return this->lives;}
-    inline void           set_angle            (double a)
-                            {this->angle = a;}
 
-    inline Vec2<double>   get_center            (void)
-                            {return this->center;}
+  public:
+    Player  (int width, int height) 
+    {
+      this->SCREEN_HEIGHT = height;
+      this->SCREEN_WIDTH = width;
+      this->center     = Vec2<double>(width / 2 - 8, height / 2 - 8);
+      this->thrust_vec = Vec2<double>(0, 0);
+      this->hdl.sprite_angle = 0;
+      this->hdl.thrust = false;
+      this->hdl.FPS = 60;
+      this->hdl.quit = false;
+      this->hdl.blast = false;
+      this->hdl.second_p = false;
+    }
 
-    inline void          set_center            (Vec2<double>&& c)
-                            {this->center = std::move(c);}
+    // getters
+    inline int            get_health    (void)    {return this->lives;}
+    inline Vec2<double>   get_center    (void)    {return this->center;}
+    inline double         get_angle     (void)    {return this->angle;}
+    inline std::shared_ptr<SDL_Surface> get_surf      (void)    {return this->player_surf;}
+    inline std::shared_ptr<SDL_Texture> get_tex       (void)    {return this->texture;}
+    inline std::shared_ptr<SDL_Rect>    get_rect_dst  (void)    {return this->dst;}
+    inline std::shared_ptr<SDL_Rect>    get_rect_src  (void)    {return this->src;}
 
-    inline void           set_surf             (std::shared_ptr<SDL_Surface>&& s)
-                            {this->player_surf = std::move(s);}
+    // setters
+    inline void remove_health (int l)             {this->lives -= l;}
+    inline void set_angle     (double a)          {this->angle = a;}
+    inline void set_center    (Vec2<double>&& c)  {this->center = std::move(c);}
+    inline void set_thrust    (Vec2<double>&& t)  {this->thrust_vec = std::move(t);}
 
-    inline void           set_tex              (std::shared_ptr<SDL_Texture>&& t)
-                            {this->texture = std::move(t);}
-
-    inline void           set_rect_src         (std::shared_ptr<SDL_Rect>&& src)
-                            {this->src = std::move(src);}
-
-    inline void           set_rect_dst         (std::shared_ptr<SDL_Rect>&& dst)
-                            {this->dst = std::move(dst);}
-
-    inline std::shared_ptr
-    <SDL_Surface>
-                          get_surf             (void)
-                            {return this->player_surf;}
-
-    inline std::shared_ptr
-    <SDL_Texture>
-                          get_tex              (void)
-                            {return this->texture;}
-
-    inline std::shared_ptr
-    <SDL_Rect>
-                          get_rect_dst         (void)
-                            {return this->dst;}
-
-    inline std::shared_ptr
-    <SDL_Rect>
-                          get_rect_src         (void)
-                            {return this->src;}
-
-    inline double         get_angle            (void)
-                            {return this->angle;}
-
-                          Player               (int width, int height) 
-                          {
-                            this->SCREEN_HEIGHT = height;
-                            this->SCREEN_WIDTH = width;
-                            this->center     = Vec2<double>(width / 2 - 8, height / 2 - 8);
-                            this->thrust_vec = Vec2<double>(0, 0);
-                            this->hdl.sprite_angle = 0;
-                            this->hdl.thrust = false;
-                            this->hdl.FPS = 60;
-                            this->hdl.quit = false;
-                            this->hdl.blast = false;
-                            this->hdl.second_p = false;
-                          }
+    inline void set_surf      (std::shared_ptr<SDL_Surface>&& s)  {this->player_surf = std::move(s);}
+    inline void set_tex       (std::shared_ptr<SDL_Texture>&& t)  {this->texture = std::move(t);}
+    inline void set_rect_src  (std::shared_ptr<SDL_Rect>&& src)   {this->src = std::move(src);}
+    inline void set_rect_dst  (std::shared_ptr<SDL_Rect>&& dst)   {this->dst = std::move(dst);}
                           
     inline void           thrust               (const double& last_angle) {
                           this->thrust_vec.x += 

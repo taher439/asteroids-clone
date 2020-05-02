@@ -4,7 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <SDL.h>
-#include<list>
+#include <list>
 #include "templates.h"
 
 // class Color

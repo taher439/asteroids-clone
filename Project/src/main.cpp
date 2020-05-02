@@ -26,4 +26,5 @@ main(int argc, char *argv[])
   test->init(1, multiplayer);
   //
   test->proc_input();
+  return 0;
 }

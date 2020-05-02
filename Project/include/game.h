@@ -13,7 +13,7 @@
 #include <thread>
 #include <mutex>
 #include <list>
-#include "particle.h"
+#include <templates.h>
 
 #define PI 3.14159265
 #define MAX_PARTICLES 20
@@ -30,6 +30,8 @@
 #endif
 class Player;
 class Asteroid;
+class Particle_container;
+class Moving_object;
 
 typedef struct sdl_event_handler
 {
@@ -42,12 +44,6 @@ typedef struct sdl_event_handler
          second_p;
   int    FPS;
 } sdl_event_handler;
-
-typedef struct blast
-{
-  Vec2<double> loc;
-  double angle;
-} blast;
 
 class Direction
 {
@@ -67,8 +63,8 @@ class Game
     std::shared_ptr<SDL_Surface>  surf;
     std::shared_ptr<SDL_Renderer> rend;
     std::shared_ptr<SDL_Event>    ev;
-    std::list<std::shared_ptr<Asteroid>> active_asteroids;
     std::list<std::shared_ptr<Particle_container>> particle_clouds;
+    std::list<std::shared_ptr<Moving_object>> moving_objects;
     std::vector<std::shared_ptr<Player>>   players;
     int current_level;
 
@@ -117,7 +113,10 @@ class Game
     int                   split_asteroid        (Vec2<double>, double);
     std::shared_ptr
     <Particle_container>  generate_particles    (Vec2<double>, int);
-    void                  particles             (const std::shared_ptr<SDL_Renderer>& rend);
-    Vec2<double>          generate_asteroid_pos (void);
+
+    // game update functions
+    void                  particles             (void);
+    void                  update_objects         (void);
 };
+
 #endif 

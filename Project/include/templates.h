@@ -6,6 +6,8 @@
 #include <vector>
 #include <type_traits>
 
+///// TEMPLATES AND STRUCTURES
+
 class Particle;
 
 template <typename T>
@@ -135,6 +137,20 @@ class Rand_gen <T, std::enable_if_t<std::is_integral_v<T>>>
       std::normal_distribution<T> dis(min, max);
       return dis(gen);
     }
+};
+
+typedef struct blast
+{
+  Vec2<double> loc;
+  double angle;
+} blast;
+
+// test
+class SCREEN
+{
+  public:
+    static const int SCREEN_WIDTH = 640;
+    static const int SCREEN_HEIGHT = 480;
 };
 
 #endif
