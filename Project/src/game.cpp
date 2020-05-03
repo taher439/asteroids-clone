@@ -27,11 +27,11 @@ Game::init(int asteroid_num, bool mp)
 
   this->players.push_back(std::make_shared<Player>(640, 480));
 
-  for (int i = 0; i < this->total_asteroids; i++) {
-    // this->moving_objects.emplace_back(std::make_shared<Asteroid>(this->rend, 20, center, 2*BIG, 2*BIG));
-    this->moving_objects.emplace_back(std::make_shared<Spaceship>(this->rend, 100, 100, 60, 123));
-    this->moving_objects.front()->set_speed(0);
-  }
+  #ifdef DEBUG
+  this->hitboxes_test();
+  #else
+  this->spawn_asteroid(this->total_asteroids, BIG, BIG);
+  #endif
 }
 
 void 
@@ -193,10 +193,6 @@ Game::proc_input(void)
       p->draw_ship(this->rend, p->hdl.thrust);
       p->draw_fire(this->rend);
       
-      // update moving objects => move them, detect blast collision
-      this->update_objects();
-      this->particles();
-      
     //   for (int i = 0; i < this->active_asteroids.size(); i++) 
     //   for (auto i = this->active_asteroids.begin(); i != this->active_asteroids.end(); i++)
     //   {
@@ -229,23 +225,31 @@ Game::proc_input(void)
 
       
       // to_delete.clear();
-    //framerate limit
-      frame_time = SDL_GetTicks() - frame_start;
-      if (frame_delay > frame_time) 
-        SDL_Delay(frame_delay - frame_time);
     }
+
+    // update moving objects => move them, detect blast collision
+    this->update_objects();
+    this->particles();
+
+    //framerate limit
+    frame_time = SDL_GetTicks() - frame_start;
+    if (frame_delay > frame_time) 
+      SDL_Delay(frame_delay - frame_time);
 
     //proceed to next level
+    if (this->moving_objects.empty()) {
+      this->level_up();
+    }
 
     // if (this->active_asteroids.empty()) {
-    if (this->moving_objects.empty()) {
-      this->current_level++;
-      this->total_asteroids *= this->current_level; 
-      for (int i = 0; i < this->total_asteroids; i++) {
-        this->moving_objects.emplace_back(std::make_shared<Asteroid>(this->rend, 5, 2*BIG, 2*BIG));
-        this->moving_objects.emplace_back(std::make_shared<Spaceship>(this->rend, 20, 41));
-      }
-    }
+    // if (this->moving_objects.empty()) {
+    //   this->current_level++;
+    //   this->total_asteroids *= this->current_level; 
+    //   for (int i = 0; i < this->total_asteroids; i++) {
+    //     this->moving_objects.emplace_back(std::make_shared<Asteroid>(this->rend, 5, BIG, BIG));
+    //     this->moving_objects.emplace_back(std::make_shared<Spaceship>(this->rend, 20, 41));
+    //   }
+    // }
 
     for (auto i: dead_player) {
         this->players.erase(this->players.begin() + i);
@@ -275,11 +279,11 @@ int
 Game::split_asteroid(Vec2<double> v, double current_size)
 {
   if (current_size == BIG) {
-    this->moving_objects.emplace_back(std::make_shared<Asteroid>(rend, 20, v + BIG, 2*MID, 2*MID));
+    this->moving_objects.emplace_back(std::make_shared<Asteroid>(rend, 20, v + MID, MID, MID));
   }
   else if (current_size == MID) {
-    this->moving_objects.emplace_back(std::make_shared<Asteroid>(this->rend, 5, v + MID, 2*SMALL, 2*SMALL));
-    this->moving_objects.emplace_back(std::make_shared<Asteroid>(this->rend, 5, v - MID, 2*SMALL, 2*SMALL));
+    this->moving_objects.emplace_back(std::make_shared<Asteroid>(this->rend, 5, v + SMALL, SMALL, SMALL));
+    this->moving_objects.emplace_back(std::make_shared<Asteroid>(this->rend, 5, v - SMALL, SMALL, SMALL));
   }
   return 0;
 }
@@ -320,7 +324,7 @@ Game::update_objects(void)
   for (auto mo = this->moving_objects.begin(); mo != this->moving_objects.end(); mo++)
   {
     // TODO : liste générale de blasts mais identifiant du player pour un blast
-    (*mo)->update(this->players[0]->blasts, this->players[0]);
+    (*mo)->update(this->players[0]->blasts, this->players);
 
     // if object died, generate particles
     if ( !(*mo)->is_alive() )
@@ -330,7 +334,7 @@ Game::update_objects(void)
       this->particle_clouds.emplace_back(this->generate_particles(tmp_v, 50));
       // if the object was an asteroid, split it
       if ( (*mo)->has_type("ASTEROID") ) {
-        this->split_asteroid(tmp_v, height/2);
+        this->split_asteroid(tmp_v, height);
       }
 
       mo = this->moving_objects.erase(mo);
@@ -338,11 +342,41 @@ Game::update_objects(void)
     } 
     else 
     {
-      // after moving detect collision
-      // this->players[0]->asteroid_collision((*mo));
       // then draw
       (*mo)->draw();
     }
 
   }
+}
+
+void
+Game::spawn_spaceship(int count)
+{
+  for (int i = 0; i < count; i++) {
+    this->moving_objects.emplace_back(std::make_shared<Spaceship>(this->rend, DEFAULT_SPACESHIP_HEIGHT, DEFAULT_SPACESHIP_WIDTH, 2000));
+  }
+}
+
+void
+Game::spawn_asteroid(int count, int height, int width)
+{
+  for (int i = 0; i < count; i++) {
+    this->moving_objects.emplace_back(std::make_shared<Asteroid>(this->rend, 5, BIG, BIG));
+  }
+}
+
+void
+Game::level_up(void)
+{
+  this->current_level++;
+  this->total_asteroids *= this->current_level; 
+  this->spawn_asteroid(this->total_asteroids, BIG, BIG);
+  this->spawn_spaceship(this->total_asteroids);
+}
+
+void
+Game::hitboxes_test(void)
+{
+  this->moving_objects.emplace_back(std::make_shared<Spaceship>(this->rend, 100, 100, 60, 123, 100));
+  this->moving_objects.front()->set_speed(0);
 }

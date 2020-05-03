@@ -1,12 +1,19 @@
 #include "game.h"
 #include "player.h"
 #include "sdl_wrapper.h"
+// #include <SDL_ttf.h>
 
 int 
 main(int argc, char *argv[])
 {
   int c;
   bool multiplayer = false;
+
+  // if(TTF_Init()==-1) 
+  // {
+  //     printf("TTF_Init: %s\n", TTF_GetError());
+  //     exit(2);
+  // }
 
   if (argc != 1) {
     while( ( c = getopt (argc, argv, "m") ) != -1 ) 

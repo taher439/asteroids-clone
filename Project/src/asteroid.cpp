@@ -86,7 +86,7 @@ Asteroid::detect_inter(const Vec2<double>& A, const Vec2<double>& B)
 }
 
 void
-Asteroid::update(std::vector<std::shared_ptr<blast>>& blasts, const std::shared_ptr<Player>& players)
+Asteroid::update(std::vector<std::shared_ptr<blast>>& blasts, const std::vector<std::shared_ptr<Player>>& players)
 {
   this->move();
   this->detect_blast_collision(blasts);
@@ -138,25 +138,21 @@ Asteroid::has_type (std::string str)
     }
 }
 
-void 
-Asteroid::detect_player_collision(const std::shared_ptr<Player>& p)
-{
-  auto ccw   = [](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C) 
-                {return (C.y - A.y) * (B.x - A.x) < (B.y-A.y) * (C.x-A.x);};
-  auto inter = [&](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C, Vec2<double>& D)
-                {ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D);};
-
-  if (this->detect_inter(p->A, p->B) || 
-      this->detect_inter(p->C, p->D) || 
-      this->detect_inter(p->E, p->F)) 
-  {
-    Vec2<double> new_center (SCREEN::SCREEN_WIDTH / 2 - 8, SCREEN::SCREEN_HEIGHT / 2 - 8);
-    p->set_center(std::move(new_center));
-    Vec2<double> new_thrust (0, 0);
-    p->set_thrust(std::move(new_thrust));
-    p->remove_health(1);
-    #ifdef DEBUG
-      std::cout << "\nplayer lives: " << p->get_health() << std::endl;
-    #endif 
-  }
-}
+// void 
+// Asteroid::detect_player_collision(const std::vector<std::shared_ptr<Player>>& players)
+// {
+//   // auto ccw   = [](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C) 
+//   //               {return (C.y - A.y) * (B.x - A.x) < (B.y-A.y) * (C.x-A.x);};
+//   // auto inter = [&](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C, Vec2<double>& D)
+//   //               {ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D);};
+  
+//   for (auto p: players) {
+//     if (!p->is_invincible() &&
+//         this->detect_inter(p->A, p->B) || 
+//         this->detect_inter(p->C, p->D) || 
+//         this->detect_inter(p->E, p->F)) 
+//     {
+//       p->asteroid_collision();
+//     }
+//   }
+// }

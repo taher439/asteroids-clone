@@ -1,6 +1,7 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 #include "game.h"
+#define INVINCIBILITY_TIME 5000
 
 class Asteroid;
 
@@ -16,6 +17,9 @@ class Player
     std::shared_ptr<SDL_Rect>    dst, src;
     static constexpr double      ship_thrust = 5;
     int lives = 3, score = 0;
+    int clock;
+    bool invincible;
+
   public:
     Vec2<double> thrust_vec, A, B, C, D, E, F;
 
@@ -43,6 +47,7 @@ class Player
     inline int            get_health    (void)    {return this->lives;}
     inline Vec2<double>   get_center    (void)    {return this->center;}
     inline double         get_angle     (void)    {return this->angle;}
+           bool           is_invincible (void);
     inline std::shared_ptr<SDL_Surface> get_surf      (void)    {return this->player_surf;}
     inline std::shared_ptr<SDL_Texture> get_tex       (void)    {return this->texture;}
     inline std::shared_ptr<SDL_Rect>    get_rect_dst  (void)    {return this->dst;}
@@ -53,6 +58,7 @@ class Player
     inline void set_angle     (double a)          {this->angle = a;}
     inline void set_center    (Vec2<double>&& c)  {this->center = std::move(c);}
     inline void set_thrust    (Vec2<double>&& t)  {this->thrust_vec = std::move(t);}
+           void set_invincible(bool b);
 
     inline void set_surf      (std::shared_ptr<SDL_Surface>&& s)  {this->player_surf = std::move(s);}
     inline void set_tex       (std::shared_ptr<SDL_Texture>&& t)  {this->texture = std::move(t);}
@@ -93,7 +99,7 @@ class Player
                           }
     void                 add_blast            ();
     void                 draw_fire            (const std::shared_ptr<SDL_Renderer>&);
-    void                 asteroid_collision   (const std::shared_ptr<Asteroid>&);
+    void                 asteroid_collision   (void);
     void                 draw_ship            (const std::shared_ptr<SDL_Renderer>&,
                                                const bool&);
 };

@@ -11,7 +11,7 @@ SDL_wrapper::ret_err_SDL(const std::string& err_msg)
 void
 SDL_wrapper::init(void) 
 {
-  if (SDL_Init(SDL_INIT_VIDEO) < 0)
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
     ret_err_SDL("SDL could not initialize! SDL_Error");
 
   if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))

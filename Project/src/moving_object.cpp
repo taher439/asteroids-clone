@@ -1,5 +1,6 @@
 #include "moving_object.h"
 #include "sdl_wrapper.h"
+#include "player.h"
 
 Moving_object::Moving_object (void)
 {
@@ -55,6 +56,13 @@ Moving_object::set_speed (double s)
 {
   this->speed = s;
 }
+
+void 
+Moving_object::set_health (int h) 
+{
+  this->health = h;
+}
+
 
 void 
 Moving_object::move (void)
@@ -139,6 +147,24 @@ Moving_object::generate_center_pos(void)
   return center;
 }
 
+void 
+Moving_object::detect_player_collision(const std::vector<std::shared_ptr<Player>>& players)
+{
+  // auto ccw   = [](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C) 
+  //               {return (C.y - A.y) * (B.x - A.x) < (B.y-A.y) * (C.x-A.x);};
+  // auto inter = [&](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C, Vec2<double>& D)
+  //               {ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D);};
+  
+  for (auto p: players) {
+    if (!p->is_invincible() &&
+        this->detect_inter(p->A, p->B) || 
+        this->detect_inter(p->C, p->D) || 
+        this->detect_inter(p->E, p->F)) 
+    {
+      p->asteroid_collision();
+    }
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

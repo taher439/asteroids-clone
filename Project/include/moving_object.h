@@ -7,6 +7,12 @@
 #include <memory>
 #include <list>
 #include "templates.h"
+#define BIG 100.0
+#define MID 50.0
+#define SMALL 25.0
+#define XSMALL 12.5
+#define DEFAULT_SPACESHIP_HEIGHT 20.0
+#define DEFAULT_SPACESHIP_WIDTH 41.0
 
 class Player;
 
@@ -39,9 +45,12 @@ class Moving_object
     inline double       get_health        (void) { return this->health;};
     inline bool         is_alive          (void) { return this->health > 0;};
 
-    virtual void update (std::vector<std::shared_ptr<blast>>&, const std::shared_ptr<Player>&) = 0;
+    // game update functions
+    void detect_player_collision(const std::vector<std::shared_ptr<Player>>&);
+
+    // virtual game update functions
+    virtual void update (std::vector<std::shared_ptr<blast>>&, const std::vector<std::shared_ptr<Player>>&) = 0;
     virtual void detect_blast_collision(std::vector<std::shared_ptr<blast>>&) = 0; 
-    virtual void detect_player_collision(const std::shared_ptr<Player>&) = 0;
     virtual bool has_type (std::string) = 0;
 
   protected:
@@ -49,6 +58,7 @@ class Moving_object
     void wrap_coord   (Vec2<double>& v);
     bool in_screen    (const Vec2<double>&);
     Vec2<double>      generate_center_pos (void);
+    virtual bool detect_inter (const Vec2<double>&, const Vec2<double>&) = 0;
     virtual void      create_texture   (int, int) = 0;
 };
 

@@ -56,8 +56,8 @@ Player::draw_fire(const std::shared_ptr<SDL_Renderer>& rend)
     }
 
     for (auto s: this->blasts) {
-        s->loc.x += cos(s->angle - 20.45) * 5;
-        s->loc.y += sin(s->angle - 20.45) * 5;
+        s->loc.x += cos(s->angle-PI/2) * 5;
+        s->loc.y += sin(s->angle-PI/2) * 5;
         SDL_wrapper::draw_point(rend, (int) s->loc.x, (int) s->loc.y);
         #ifdef DEBUG
             std::cout << "current angle " << angle << std::endl; 
@@ -79,25 +79,45 @@ Player::draw_fire(const std::shared_ptr<SDL_Renderer>& rend)
         }
     }
 }
- 
-void 
-Player::asteroid_collision(const std::shared_ptr<Asteroid>& a)
-{
-  auto ccw   = [](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C) 
-                {return (C.y - A.y) * (B.x - A.x) < (B.y-A.y) * (C.x-A.x);};
-  auto inter = [&](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C, Vec2<double>& D)
-                {ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D);};
 
-  if (a->detect_inter(this->A, this->B) || 
-      a->detect_inter(this->C, this->D) || 
-      a->detect_inter(this->E, this->F)) {
-        this->center.x = SCREEN_WIDTH / 2 - 8;
-        this->center.y = SCREEN_HEIGHT / 2 - 8;
-        this->thrust_vec.x = 0;
-        this->thrust_vec.y = 0;
-        this->lives -= 1;
-#ifdef DEBUG
-        std::cout << "\nplayer lives: " << this->lives << std::endl;
-#endif 
-    }
+// function called when there was a collision
+void 
+Player::asteroid_collision(void)
+{
+  if (this->is_invincible())
+    return;
+
+  Vec2<double> new_center (SCREEN::SCREEN_WIDTH / 2 - 8, SCREEN::SCREEN_HEIGHT / 2 - 8);
+  this->set_center(std::move(new_center));
+  Vec2<double> new_thrust (0, 0);
+  this->set_thrust(std::move(new_thrust));
+  this->remove_health(1);
+  #ifdef DEBUG
+  std::cout << "\nPlayer lives: " << this->lives << std::endl;
+  #endif 
+  this->set_invincible(true);
+  #ifdef DEBUG
+  std::cout << "Player is now invincible "<< std::endl;
+  #endif 
+}
+
+void
+Player::set_invincible(bool inv) {
+  // reset clock
+  this->clock = SDL_GetTicks();
+  this->invincible = inv;
+}
+
+bool
+Player::is_invincible(void) {
+  auto ellapsed = SDL_GetTicks() - this->clock;
+  if (this->invincible && ellapsed > INVINCIBILITY_TIME) {
+    // reset clock
+    this->clock = SDL_GetTicks();
+    this->invincible = false;
+    #ifdef DEBUG
+    std::cout << "\nPlayer is not invincible anymore"<< std::endl;
+    #endif 
+  }
+  return this->invincible;
 }
