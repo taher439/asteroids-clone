@@ -161,7 +161,7 @@ Moving_object::detect_player_collision(const std::vector<std::shared_ptr<Player>
         this->detect_inter(p->C, p->D) || 
         this->detect_inter(p->E, p->F)) 
     {
-      p->asteroid_collision();
+      p->take_damage();
     }
   }
 }

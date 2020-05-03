@@ -18,8 +18,8 @@ class Asteroid: public Moving_object
     void              draw_asteroid           (); // retrocompatibility (no textures)
     // void              detect_player_collision (const std::vector<std::shared_ptr<Player>>&) override;
     void              detect_blast_collision  (std::vector<std::shared_ptr<blast>>&) override;
-    void              update                  (std::vector<std::shared_ptr<blast>>&, const std::vector<std::shared_ptr<Player>>&) override;
-    bool              has_type                (std::string);
+    void              update                  (const std::vector<std::shared_ptr<Player>>&) override;
+    bool              has_type                (std::string) override;
 
   private:
     void draw_from_center         (const Vec2<double>&);

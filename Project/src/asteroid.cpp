@@ -81,15 +81,17 @@ Asteroid::detect_inter(const Vec2<double>& A, const Vec2<double>& B)
 {
   for (auto i: this->points)    
     if (Vec2<double>::dist(A, B, i+this->center))
-    return true;
+      return true;
   return false;
 }
 
 void
-Asteroid::update(std::vector<std::shared_ptr<blast>>& blasts, const std::vector<std::shared_ptr<Player>>& players)
+Asteroid::update(const std::vector<std::shared_ptr<Player>>& players)
 {
   this->move();
-  this->detect_blast_collision(blasts);
+  for (auto p: players) {
+    this->detect_blast_collision(p->get_blasts());
+  }
   this->detect_player_collision(players);
 }
 

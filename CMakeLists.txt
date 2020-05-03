@@ -28,6 +28,7 @@ endfunction()
 # ajouter les sources ici
 set(SRC_FILES_
     ${SOURCE_DIR_}/asteroid.cpp  
+    ${SOURCE_DIR_}/collision.cpp  
     ${SOURCE_DIR_}/game.cpp  
     ${SOURCE_DIR_}/main.cpp  
     ${SOURCE_DIR_}/moving_object.cpp  
@@ -36,6 +37,7 @@ set(SRC_FILES_
     ${SOURCE_DIR_}/sdl_wrapper.cpp
     ${SOURCE_DIR_}/spaceship.cpp
     ${INCLUDE_DIR_}/asteroid.h
+    ${INCLUDE_DIR_}/collision.h
     ${INCLUDE_DIR_}/game.h
     ${INCLUDE_DIR_}/moving_object.h
     ${INCLUDE_DIR_}/particle.h

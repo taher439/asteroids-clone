@@ -117,6 +117,7 @@ class Game
     // game update functions
     void                  particles             (void);
     void                  update_objects        (void);
+    void                  update_players        (void);
     void                  level_up              (void);
     void                  spawn_spaceship       (int);
     void                  spawn_asteroid        (int, int, int);

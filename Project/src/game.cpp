@@ -27,11 +27,11 @@ Game::init(int asteroid_num, bool mp)
 
   this->players.push_back(std::make_shared<Player>(640, 480));
 
-  #ifdef DEBUG
-  this->hitboxes_test();
-  #else
+  // #ifdef DEBUG
+  // this->hitboxes_test();
+  // #else
   this->spawn_asteroid(this->total_asteroids, BIG, BIG);
-  #endif
+  // #endif
 }
 
 void 
@@ -149,9 +149,7 @@ Game::proc_input(void)
   int r = 0;
   Vec2<double> tmp_v;
   double size;
-  std::list<int>  to_delete;
-  std::list<int>  dead_player;
-  int player_index = 0;
+
   while(!quit) { 
     frame_start = SDL_GetTicks();
     SDL_SetRenderDrawColor(rend.get(), 0, 0, 0, 255);
@@ -163,72 +161,11 @@ Game::proc_input(void)
         handle_event(this->players[1]->hdl);
     }
 
-    for (auto p: this->players) {
-      if (p->get_health() <= 0) {
-        dead_player.emplace_back(player_index);
-        continue;
-      }
-      player_index++;
-      p->set_angle(p->get_angle() + p->hdl.sprite_angle);
-
-      if (p->hdl.thrust)
-        p->thrust(p->get_angle());
-      else
-        p->slow_ship();
-      if (p->hdl.blast) {
-
-      #ifdef DEBUG
-        std::cout << "player pressed fire button\n";
-      #endif
-        p->add_blast();
-        p->hdl.blast = false;
-      }
-
-      p->wrap_ship();
-      p->move_ship();
-
-      if (p->hdl.quit)
-        quit = true;
-
-      p->draw_ship(this->rend, p->hdl.thrust);
-      p->draw_fire(this->rend);
-      
-    //   for (int i = 0; i < this->active_asteroids.size(); i++) 
-    //   for (auto i = this->active_asteroids.begin(); i != this->active_asteroids.end(); i++)
-    //   {
-    //     auto a = (*i);
-    //     if (a == nullptr) continue;
-    //     a->detect_collision(p->blasts);
-    //     p->asteroid_collision(a);
-    //     // a->draw_asteroid(); // kept for retro
-    //     a->draw();
-
-    //     if (a->get_health() == 0) {
-    //       size = a->get_size();
-    //       tmp_v = a->get_center();
-    //       this->particle_clouds.emplace_back(this->generate_particles(tmp_v, 50));
-    //       this->split_asteroid(tmp_v, size);
-    //       // to_delete.emplace_back(i);
-    //       i = this->active_asteroids.erase(i);
-    //       i--;
-    //       #ifdef DEBUG
-    //       std::cout << "index to delete: " << r << std::endl;
-    //       #endif
-    //     }
-    //     a->update(this->players[0]->blasts);
-    //   }
-
-      // for (auto i: to_delete) {         
-      //   // this->active_asteroids.erase(this->active_asteroids.begin() + i);
-      //   this->active_asteroids.erase(i);
-      // }
-
-      
-      // to_delete.clear();
-    }
-
+    // update players => move them, draw them and their blasts
+    this->update_players();
     // update moving objects => move them, detect blast collision
     this->update_objects();
+    // draw particles
     this->particles();
 
     //framerate limit
@@ -241,28 +178,6 @@ Game::proc_input(void)
       this->level_up();
     }
 
-    // if (this->active_asteroids.empty()) {
-    // if (this->moving_objects.empty()) {
-    //   this->current_level++;
-    //   this->total_asteroids *= this->current_level; 
-    //   for (int i = 0; i < this->total_asteroids; i++) {
-    //     this->moving_objects.emplace_back(std::make_shared<Asteroid>(this->rend, 5, BIG, BIG));
-    //     this->moving_objects.emplace_back(std::make_shared<Spaceship>(this->rend, 20, 41));
-    //   }
-    // }
-
-    for (auto i: dead_player) {
-        this->players.erase(this->players.begin() + i);
-        if (this->players.empty()) {
-          #ifdef DEBUG
-            std::cout << "GAME OVER\n";
-          #endif 
-          quit = true;
-          break;
-        }
-    }
-    player_index = 0;
-    dead_player.clear();
     SDL_RenderPresent(rend.get());
     SDL_RenderClear(rend.get());
   }
@@ -324,7 +239,7 @@ Game::update_objects(void)
   for (auto mo = this->moving_objects.begin(); mo != this->moving_objects.end(); mo++)
   {
     // TODO : liste générale de blasts mais identifiant du player pour un blast
-    (*mo)->update(this->players[0]->blasts, this->players);
+    (*mo)->update(this->players);
 
     // if object died, generate particles
     if ( !(*mo)->is_alive() )
@@ -346,6 +261,55 @@ Game::update_objects(void)
       (*mo)->draw();
     }
 
+  }
+}
+
+void
+Game::update_players(void)
+{
+  std::list<int>  dead_player;
+  int player_index = 0;
+
+  for (auto p: this->players) {
+    if (p->get_health() <= 0) {
+      dead_player.emplace_back(player_index);
+      continue;
+    }
+    player_index++;
+    p->set_angle(p->get_angle() + p->hdl.sprite_angle);
+
+    if (p->hdl.thrust)
+      p->thrust(p->get_angle());
+    else
+      p->slow_ship();
+    if (p->hdl.blast) {
+      #ifdef DEBUG
+        std::cout << "player pressed fire button\n";
+      #endif
+      p->add_blast();
+      p->hdl.blast = false;
+    }
+
+    p->wrap_ship();
+    p->move_ship();
+
+    if (p->hdl.quit)
+      quit = true;
+
+    p->draw_ship(this->rend, p->hdl.thrust);
+    p->draw_fire(this->rend);
+    
+  }
+
+  for (auto i: dead_player) {
+    this->players.erase(this->players.begin() + i);
+    if (this->players.empty()) {
+      #ifdef DEBUG
+        std::cout << "GAME OVER\n";
+      #endif 
+      quit = true;
+      break;
+    }
   }
 }
 

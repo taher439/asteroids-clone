@@ -82,7 +82,7 @@ Player::draw_fire(const std::shared_ptr<SDL_Renderer>& rend)
 
 // function called when there was a collision
 void 
-Player::asteroid_collision(void)
+Player::take_damage(void)
 {
   if (this->is_invincible())
     return;

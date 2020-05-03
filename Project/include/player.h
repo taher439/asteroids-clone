@@ -19,12 +19,12 @@ class Player
     int lives = 3, score = 0;
     int clock;
     bool invincible;
+    std::vector<std::shared_ptr<blast>>  blasts;
 
   public:
     Vec2<double> thrust_vec, A, B, C, D, E, F;
 
   public:
-    std::vector<std::shared_ptr<blast>>  blasts;
     sdl_event_handler hdl;
     bool second_p;
 
@@ -48,6 +48,8 @@ class Player
     inline Vec2<double>   get_center    (void)    {return this->center;}
     inline double         get_angle     (void)    {return this->angle;}
            bool           is_invincible (void);
+    inline std::vector<std::shared_ptr<blast>>& get_blasts(void) {return this->blasts;}
+
     inline std::shared_ptr<SDL_Surface> get_surf      (void)    {return this->player_surf;}
     inline std::shared_ptr<SDL_Texture> get_tex       (void)    {return this->texture;}
     inline std::shared_ptr<SDL_Rect>    get_rect_dst  (void)    {return this->dst;}
@@ -97,9 +99,9 @@ class Player
                             if (this->center.y < 0) 
                               this->center.y = this->SCREEN_HEIGHT;
                           }
-    void                 add_blast            ();
+    void                 add_blast            (void);
     void                 draw_fire            (const std::shared_ptr<SDL_Renderer>&);
-    void                 asteroid_collision   (void);
+    void                 take_damage          (void);
     void                 draw_ship            (const std::shared_ptr<SDL_Renderer>&,
                                                const bool&);
 };

@@ -39,17 +39,17 @@ class Moving_object
     void set_speed      (double);
     void set_health     (int);
 
-    inline int          get_height        (void) { return this->height; };
-    inline int          get_width         (void) { return this->width; };
-    inline Vec2<double> get_center        (void) { return this->center; };
-    inline double       get_health        (void) { return this->health;};
-    inline bool         is_alive          (void) { return this->health > 0;};
+    inline int            get_height        (void) { return this->height; };
+    inline int            get_width         (void) { return this->width; };
+    inline double         get_health        (void) { return this->health;};
+    inline bool           is_alive          (void) { return this->health > 0;};
+    inline const Vec2<double>&  get_center  (void) { return this->center; };
 
     // game update functions
     void detect_player_collision(const std::vector<std::shared_ptr<Player>>&);
 
     // virtual game update functions
-    virtual void update (std::vector<std::shared_ptr<blast>>&, const std::vector<std::shared_ptr<Player>>&) = 0;
+    virtual void update (const std::vector<std::shared_ptr<Player>>&) = 0;
     virtual void detect_blast_collision(std::vector<std::shared_ptr<blast>>&) = 0; 
     virtual bool has_type (std::string) = 0;
 
@@ -58,7 +58,7 @@ class Moving_object
     void wrap_coord   (Vec2<double>& v);
     bool in_screen    (const Vec2<double>&);
     Vec2<double>      generate_center_pos (void);
-    virtual bool detect_inter (const Vec2<double>&, const Vec2<double>&) = 0;
+    virtual bool      detect_inter (const Vec2<double>&, const Vec2<double>&) = 0;
     virtual void      create_texture   (int, int) = 0;
 };
 
