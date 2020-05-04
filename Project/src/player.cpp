@@ -2,37 +2,43 @@
 #include "asteroid.h"
 #include "sdl_wrapper.h"
 
+void
+Player::calculate_pos(void)
+{
+  //first segment
+  this->A = Vec2<double>(this->center.x + 10 * sin(this->angle), 
+              this->center.y - 10 * cos(this->angle));
+
+  this->B = Vec2<double>(this->center.x - 10 * (sin(this->angle) + cos(this->angle)),
+              this->center.y + 10 * (cos(this->angle) - sin(this->angle)));
+
+  //second segment
+  this->C = Vec2<double>(this->center.x + 10 * sin(this->angle),
+              this->center.y - 10 * cos(this->angle));
+
+  this->D = Vec2<double>(this->center.x - 10 * (sin(this->angle) - cos(this->angle)),
+              this-> center.y + 10 * (cos(this->angle) + sin(this->angle)));
+
+  //third segment
+  this->E = Vec2<double>(this->center.x - 7 * (sin(this->angle) + cos(this->angle)),
+              this->center.y + 7 * (cos(this->angle) - sin(this->angle)));
+                  
+  this->F = Vec2<double>(this->center.x - 7 * (sin(this->angle) - cos(this->angle)),
+              this->center.y + 7 * (cos(this->angle) + sin(this->angle)));
+}
+
 void 
 Player::draw_ship(const std::shared_ptr<SDL_Renderer>& rend, const bool& thrusting)
-{
-    //first segment
-    this->A = Vec2<double>(this->center.x + 10 * sin(this->angle), 
-                this->center.y - 10 * cos(this->angle));
+{ 
+  this->calculate_pos();
 
-    this->B = Vec2<double>(this->center.x - 10 * (sin(this->angle) + cos(this->angle)),
-                this->center.y + 10 * (cos(this->angle) - sin(this->angle)));
+  SDL_wrapper::draw_line(rend, A.x, A.y, B.x, B.y);
+  SDL_wrapper::draw_line(rend, C.x, C.y, D.x, D.y);
+  SDL_wrapper::draw_line(rend, E.x, E.y, F.x, F.y);
 
-    //second segment
-    this->C = Vec2<double>(this->center.x + 10 * sin(this->angle),
-                this->center.y - 10 * cos(this->angle));
-
-    this->D = Vec2<double>(this->center.x - 10 * (sin(this->angle) - cos(this->angle)),
-                this-> center.y + 10 * (cos(this->angle) + sin(this->angle)));
-
-    //third segment
-    this->E = Vec2<double>(this->center.x - 7 * (sin(this->angle) + cos(this->angle)),
-                this->center.y + 7 * (cos(this->angle) - sin(this->angle)));
-                   
-    this->F = Vec2<double>(this->center.x - 7 * (sin(this->angle) - cos(this->angle)),
-                this->center.y + 7 * (cos(this->angle) + sin(this->angle)));
-
-    SDL_wrapper::draw_line(rend, A.x, A.y, B.x, B.y);
-    SDL_wrapper::draw_line(rend, C.x, C.y, D.x, D.y);
-    SDL_wrapper::draw_line(rend, E.x, E.y, F.x, F.y);
-
-    if (thrusting) {
-        //add thrust animation
-    }
+  if (thrusting) {
+      //add thrust animation
+  }
 }
 
 void 
@@ -92,6 +98,7 @@ Player::take_damage(void)
   Vec2<double> new_thrust (0, 0);
   this->set_thrust(std::move(new_thrust));
   this->remove_health(1);
+  this->calculate_pos(); // calculate the new triangle positions
   #ifdef DEBUG
   std::cout << "\nPlayer lives: " << this->lives << std::endl;
   #endif 
@@ -128,7 +135,7 @@ Player::update_score(int score) {
 }
 
 int
-Player::update_score_texture(const std::shared_ptr<SDL_Renderer>& rend) 
+Player::update_score_texture(const std::shared_ptr<SDL_Renderer>& rend, std::shared_ptr<SDL_Texture>& texture) 
 { 
   if (this->score == this->old_score)
     return std::to_string(this->score).length() * NUMBER_WIDTH;
@@ -136,11 +143,11 @@ Player::update_score_texture(const std::shared_ptr<SDL_Renderer>& rend)
   // update old score
   this->old_score = this->score;
 
-  if(this->score_texture == nullptr) {
+  if(texture == nullptr) {
     // max score = 999 999
-    this->score_texture = SDL_wrapper::create_texture(rend, NUMBER_HEIGHT, 6*NUMBER_WIDTH);
+    texture = SDL_wrapper::create_texture(rend, NUMBER_HEIGHT, 6*NUMBER_WIDTH);
   }
   
   // update our score texture
-  return SDL_wrapper::update_score(rend, score_texture, this->score);
+  return SDL_wrapper::update_score(rend, texture, this->score);
 }

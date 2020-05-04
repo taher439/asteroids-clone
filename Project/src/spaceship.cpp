@@ -32,6 +32,9 @@ Spaceship::update(const std::vector<std::shared_ptr<Player>>& players)
 {
   this->move();
   for (auto p: players) {
+    if (!p->is_alive()) {
+      continue;
+    }
     this->detect_blast_collision(p->get_blasts());
     if (!this->is_alive()) {
       // if asteroid died, update player score and leave function
@@ -77,11 +80,12 @@ Spaceship::detect_player_shot (const std::vector<std::shared_ptr<Player>>& playe
 {
   for (auto s = this->blasts.begin(); s != this->blasts.end(); ++s) {
     for (auto p: players) {
-      if (collision::point_in_triangle((*s)->loc, p->A, p->B, p->D))
+      if (p->is_alive() && collision::point_in_triangle((*s)->loc, p->A, p->B, p->D))
       {
         p->take_damage();
         s = this->blasts.erase(s);
         s--;
+        break;
       }
     }
   }

@@ -157,9 +157,15 @@ Game::proc_input(void)
     SDL_RenderClear(rend.get());
 
     while(SDL_PollEvent(this->ev.get()) != 0) {
-      handle_event(this->players[0]->hdl);
-      if (mp)
+      if (this->players[0] != nullptr)
+        handle_event(this->players[0]->hdl);
+      if (mp && this->players[1] != nullptr) {
         handle_event(this->players[1]->hdl);
+      }
+
+      // handle_event(this->players[0]->hdl);
+      // if (mp)
+      //   handle_event(this->players[1]->hdl);
     }
     
     this->display_ui();
@@ -182,6 +188,12 @@ Game::proc_input(void)
 
     SDL_RenderPresent(rend.get());
     SDL_RenderClear(rend.get());
+
+    if (this->all_dead()) {
+    #ifdef DEBUG
+      std::cout << "ALL PLAYERS DIED" << std::endl;
+    #endif
+    }
   }
 
   if (quit) {
@@ -242,20 +254,18 @@ Game::display_ui(void)
   SDL_Rect dst_pos;
   dst_pos.x = 0; dst_pos.y = 0; dst_pos.h = NUMBER_HEIGHT;
 
-  dst_pos.w = this->players[0]->update_score_texture(this->rend);
-  texture = this->players[0]->get_score_texture();
-  SDL_RenderCopy(rend.get(), texture.get(), &dst_pos, &dst_pos);
+  dst_pos.w = this->players[0]->update_score_texture(this->rend, this->left_score);
+  SDL_RenderCopy(rend.get(), this->left_score.get(), &dst_pos, &dst_pos);
   
   if (this->mp) {
-    // TODO: décalage de la position à l'opposé pour le 2e joueur
+    // set dst_pos at the right side of the screen
     SDL_Rect src_pos;
     src_pos.x = 0; src_pos.y = 0; src_pos.h = NUMBER_HEIGHT;
-    src_pos.w = this->players[1]->update_score_texture(this->rend);
+    src_pos.w = this->players[1]->update_score_texture(this->rend, this->right_score);
 
     dst_pos.x = SCREEN::SCREEN_WIDTH - src_pos.w;
     dst_pos.w = src_pos.w;
-    texture = this->players[1]->get_score_texture();
-    SDL_RenderCopy(rend.get(), texture.get(), &src_pos, &dst_pos);
+    SDL_RenderCopy(rend.get(), this->right_score.get(), &src_pos, &dst_pos);
   }
 }
 
@@ -294,15 +304,14 @@ Game::update_objects(void)
 void
 Game::update_players(void)
 {
-  std::list<int>  dead_player;
-  int player_index = 0;
-
   for (auto p: this->players) {
-    if (p->get_health() <= 0) {
-      dead_player.emplace_back(player_index);
+    if (p->hdl.quit)
+      quit = true;
+
+    if (!p->is_alive()) {
+      // if the player is dead we don't update it
       continue;
     }
-    player_index++;
     p->set_angle(p->get_angle() + p->hdl.sprite_angle);
 
     if (p->hdl.thrust)
@@ -320,24 +329,22 @@ Game::update_players(void)
     p->wrap_ship();
     p->move_ship();
 
-    if (p->hdl.quit)
-      quit = true;
-
     p->draw_ship(this->rend, p->hdl.thrust);
     p->draw_fire(this->rend);
     
   }
+}
 
-  for (auto i: dead_player) {
-    this->players.erase(this->players.begin() + i);
-    if (this->players.empty()) {
-      #ifdef DEBUG
-        std::cout << "GAME OVER\n";
-      #endif 
-      quit = true;
-      break;
+bool
+Game::all_dead(void)
+{
+  for (auto p : this->players)
+  {
+    if (p->is_alive()) {
+      return false;
     }
   }
+  return true;
 }
 
 void
@@ -368,6 +375,6 @@ Game::level_up(void)
 void
 Game::hitboxes_test(void)
 {
-  this->moving_objects.emplace_back(std::make_shared<Spaceship>(this->rend, 100, 100, 60, 123, 100));
+  this->moving_objects.emplace_back(std::make_shared<Spaceship>(this->rend, 100, 100, 60, 123, 200));
   this->moving_objects.front()->set_speed(0);
 }

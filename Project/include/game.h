@@ -64,11 +64,14 @@ class Game
     std::shared_ptr<SDL_Surface>  surf;
     std::shared_ptr<SDL_Renderer> rend;
     std::shared_ptr<SDL_Event>    ev;
-    std::map<char, std::shared_ptr<SDL_Texture>> numbers;
     std::list<std::shared_ptr<Particle_container>> particle_clouds;
     std::list<std::shared_ptr<Moving_object>> moving_objects;
     std::vector<std::shared_ptr<Player>>   players;
     int current_level;
+
+    // ui
+    std::shared_ptr<SDL_Texture> left_score = nullptr;
+    std::shared_ptr<SDL_Texture> right_score = nullptr;
 
     enum state {
       MENU,
@@ -92,6 +95,7 @@ class Game
     inline void           set_win              (std::shared_ptr<SDL_Window>&&);
     inline void           set_surf             (std::shared_ptr<SDL_Surface>&&);
     inline void           set_rend             (std::shared_ptr<SDL_Renderer>&&);
+    bool                  all_dead             (void);
 
     inline std::shared_ptr
     <SDL_Renderer> 

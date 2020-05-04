@@ -156,7 +156,8 @@ Moving_object::detect_player_collision(const std::vector<std::shared_ptr<Player>
   //               {ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D);};
   
   for (auto p: players) {
-    if (!p->is_invincible() &&
+    if (p->is_alive() &&
+        !p->is_invincible() &&
         this->detect_inter(p->A, p->B) || 
         this->detect_inter(p->C, p->D) || 
         this->detect_inter(p->E, p->F)) 

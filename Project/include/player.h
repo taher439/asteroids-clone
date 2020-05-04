@@ -20,8 +20,6 @@ class Player
     int clock;
     bool invincible;
     std::vector<std::shared_ptr<blast>>  blasts;
-    std::shared_ptr<SDL_Texture>  score_texture = nullptr;
-    std::shared_ptr<SDL_Texture>  life_texture;
 
   public:
     Vec2<double> thrust_vec, A, B, C, D, E, F;
@@ -49,12 +47,12 @@ class Player
     inline int            get_health    (void)    {return this->lives;}
     inline Vec2<double>   get_center    (void)    {return this->center;}
     inline double         get_angle     (void)    {return this->angle;}
+    inline bool           is_alive      (void)    {return this->lives > 0;}
            bool           is_invincible (void);
     inline std::vector<std::shared_ptr<blast>>& get_blasts(void) {return this->blasts;}
 
     inline std::shared_ptr<SDL_Surface> get_surf      (void)    {return this->player_surf;}
     inline std::shared_ptr<SDL_Texture> get_tex       (void)    {return this->texture;}
-    inline std::shared_ptr<SDL_Texture> get_score_texture (void){return this->score_texture;}
     inline std::shared_ptr<SDL_Rect>    get_rect_dst  (void)    {return this->dst;}
     inline std::shared_ptr<SDL_Rect>    get_rect_src  (void)    {return this->src;}
 
@@ -105,10 +103,11 @@ class Player
     void                 add_blast            (void);
     void                 draw_fire            (const std::shared_ptr<SDL_Renderer>&);
     void                 take_damage          (void);
+    void                 calculate_pos        (void);
     void                 draw_ship            (const std::shared_ptr<SDL_Renderer>&,
                                                const bool&);
     void                update_score          (int score);
-    int                 update_score_texture  (const std::shared_ptr<SDL_Renderer>&);
+    int                 update_score_texture  (const std::shared_ptr<SDL_Renderer>&, std::shared_ptr<SDL_Texture>&);
 };
 
 #endif
