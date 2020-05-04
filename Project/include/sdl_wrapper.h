@@ -2,8 +2,11 @@
 #define _SDL_WRAPPER_H
 #include <map>
 #include "game.h"
+#define MAX_DIGITS 6
 #define NUMBER_WIDTH 16
 #define NUMBER_HEIGHT 25
+#define LIFE_WIDTH 25
+#define LIFE_HEIGHT 25
 
 [[maybe_unused]] static void SDL_DelRes(SDL_Window *r) 
     {SDL_DestroyWindow(r);}
@@ -54,9 +57,15 @@ class SDL_wrapper
         static std::shared_ptr<SDL_Texture>
                           load_texture     (const std::shared_ptr<SDL_Renderer>&, std::string const);
         static void draw_circle            (const std::shared_ptr<SDL_Renderer>&, int32_t, int32_t, int32_t);
-        static void load_score_textures    (const std::shared_ptr<SDL_Renderer>&);
+        static void load_textures          (const std::shared_ptr<SDL_Renderer>&);
         static int  update_score           (const std::shared_ptr<SDL_Renderer>&, std::shared_ptr<SDL_Texture>, const int);
+        static int  update_life            (const std::shared_ptr<SDL_Renderer>&, std::shared_ptr<SDL_Texture>, const int);
+        
+        
+        
         static std::map<char, std::shared_ptr<SDL_Texture>> numbers;
+        static std::shared_ptr<SDL_Texture> life;
+        static std::shared_ptr<SDL_Texture> dead;
 };
 
 #endif

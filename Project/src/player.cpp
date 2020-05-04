@@ -145,9 +145,27 @@ Player::update_score_texture(const std::shared_ptr<SDL_Renderer>& rend, std::sha
 
   if(texture == nullptr) {
     // max score = 999 999
-    texture = SDL_wrapper::create_texture(rend, NUMBER_HEIGHT, 6*NUMBER_WIDTH);
+    texture = SDL_wrapper::create_texture(rend, NUMBER_HEIGHT, MAX_DIGITS*NUMBER_WIDTH);
   }
   
   // update our score texture
   return SDL_wrapper::update_score(rend, texture, this->score);
+}
+
+int 
+Player::update_life_texture (const std::shared_ptr<SDL_Renderer>& rend, std::shared_ptr<SDL_Texture>& texture)
+{ 
+  if (this->old_lives == 0)
+    return LIFE_WIDTH;
+  if (this->lives == this->old_lives)
+    return this->lives * LIFE_WIDTH;
+
+  // update old life
+  this->old_lives = this->lives;
+
+  if(texture == nullptr) {
+    texture = SDL_wrapper::create_texture(rend, LIFE_HEIGHT, MAX_LIFE*LIFE_WIDTH);
+  }
+
+  return SDL_wrapper::update_life(rend, texture, this->lives);
 }

@@ -195,8 +195,11 @@ SDL_wrapper::numbers {
   {'9', nullptr}
 };
 
+std::shared_ptr<SDL_Texture> SDL_wrapper::life = nullptr;
+std::shared_ptr<SDL_Texture> SDL_wrapper::dead = nullptr;
+
 void
-SDL_wrapper::load_score_textures(const std::shared_ptr<SDL_Renderer>& rend)
+SDL_wrapper::load_textures(const std::shared_ptr<SDL_Renderer>& rend)
 {
   SDL_wrapper::numbers['0'] = SDL_wrapper::load_texture(rend, DATA_PATH+"zero.bmp");
   SDL_wrapper::numbers['1'] = SDL_wrapper::load_texture(rend, DATA_PATH+"one.bmp");
@@ -208,6 +211,8 @@ SDL_wrapper::load_score_textures(const std::shared_ptr<SDL_Renderer>& rend)
   SDL_wrapper::numbers['7'] = SDL_wrapper::load_texture(rend, DATA_PATH+"seven.bmp");
   SDL_wrapper::numbers['8'] = SDL_wrapper::load_texture(rend, DATA_PATH+"height.bmp");
   SDL_wrapper::numbers['9'] = SDL_wrapper::load_texture(rend, DATA_PATH+"nine.bmp");
+  SDL_wrapper::life = SDL_wrapper::load_texture(rend, DATA_PATH+"heart.bmp");
+  SDL_wrapper::dead = SDL_wrapper::load_texture(rend, DATA_PATH+"dead.bmp");
 }
 
 int
@@ -217,7 +222,7 @@ SDL_wrapper::update_score(
   const int score)
 {
   int height, width;
-  height = NUMBER_HEIGHT; width = 6*NUMBER_WIDTH;
+  height = NUMBER_HEIGHT; width = MAX_DIGITS*NUMBER_WIDTH;
 
   std::string string_score = std::to_string(score);
 
@@ -239,4 +244,41 @@ SDL_wrapper::update_score(
 
   // return the number width on the texture
   return string_score.length()*NUMBER_WIDTH;
+}
+
+int
+SDL_wrapper::update_life(
+  const std::shared_ptr<SDL_Renderer>& rend, 
+  std::shared_ptr<SDL_Texture> texture,
+  const int life)
+{
+  int height, width, ret_width;
+  height = LIFE_HEIGHT; width = MAX_LIFE*LIFE_WIDTH;
+
+  // draw on the texture
+  SDL_SetRenderTarget(rend.get(), texture.get());
+  SDL_RenderClear(rend.get());
+
+  // heart position on the texture
+  SDL_Rect drect;
+  drect.x = 0; drect.y = 0; drect.h = LIFE_HEIGHT; drect.w = LIFE_WIDTH;
+
+  if (life <= 0 ) {
+    std::cout << "Here" << std::endl;
+    SDL_RenderCopy(rend.get(), SDL_wrapper::dead.get(), NULL, &drect);
+    ret_width = LIFE_WIDTH;
+  }
+  else {
+    for (int i = 0; i < life; i++) {
+      SDL_RenderCopy(rend.get(), SDL_wrapper::life.get(), NULL, &drect);
+      drect.x += LIFE_WIDTH;
+    }
+    ret_width = life*LIFE_WIDTH;
+  }
+
+  // reset renderer
+  SDL_SetRenderTarget(rend.get(), NULL);
+
+  // return the src width on the texture
+  return ret_width;
 }

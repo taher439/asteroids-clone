@@ -2,6 +2,7 @@
 #define _PLAYER_H
 #include "game.h"
 #define INVINCIBILITY_TIME 5000
+#define MAX_LIFE 3
 
 class Asteroid;
 
@@ -16,7 +17,8 @@ class Player
     std::shared_ptr<SDL_Surface> player_surf;
     std::shared_ptr<SDL_Rect>    dst, src;
     static constexpr double      ship_thrust = 5;
-    int lives = 3, score = 0, old_score = -1;
+    int lives = MAX_LIFE, old_lives = -1;
+    int score = 0, old_score = -1;
     int clock;
     bool invincible;
     std::vector<std::shared_ptr<blast>>  blasts;
@@ -47,6 +49,7 @@ class Player
     inline int            get_health    (void)    {return this->lives;}
     inline Vec2<double>   get_center    (void)    {return this->center;}
     inline double         get_angle     (void)    {return this->angle;}
+    inline int            get_score     (void)    {return this->score;}
     inline bool           is_alive      (void)    {return this->lives > 0;}
            bool           is_invincible (void);
     inline std::vector<std::shared_ptr<blast>>& get_blasts(void) {return this->blasts;}
@@ -108,6 +111,7 @@ class Player
                                                const bool&);
     void                update_score          (int score);
     int                 update_score_texture  (const std::shared_ptr<SDL_Renderer>&, std::shared_ptr<SDL_Texture>&);
+    int                 update_life_texture   (const std::shared_ptr<SDL_Renderer>&, std::shared_ptr<SDL_Texture>&);
 };
 
 #endif

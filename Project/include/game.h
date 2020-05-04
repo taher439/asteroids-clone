@@ -71,7 +71,9 @@ class Game
 
     // ui
     std::shared_ptr<SDL_Texture> left_score = nullptr;
+    std::shared_ptr<SDL_Texture> left_life = nullptr;
     std::shared_ptr<SDL_Texture> right_score = nullptr;
+    std::shared_ptr<SDL_Texture> right_life = nullptr;
 
     enum state {
       MENU,

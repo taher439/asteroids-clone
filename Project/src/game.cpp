@@ -15,7 +15,7 @@ Game::init(int asteroid_num, bool mp)
   this->current_level = 1;
   this->win = SDL_wrapper::creat_win(this->SCREEN_WIDTH, this->SCREEN_HEIGHT);
   this->rend = SDL_wrapper::creat_rend(this->win);
-  SDL_wrapper::load_score_textures(this->rend);
+  SDL_wrapper::load_textures(this->rend);
   //initialize the asteroid field
   this->total_asteroids = asteroid_num;
   Vec2<double> center(0, 0);
@@ -191,7 +191,7 @@ Game::proc_input(void)
 
     if (this->all_dead()) {
     #ifdef DEBUG
-      std::cout << "ALL PLAYERS DIED" << std::endl;
+      // std::cout << "ALL PLAYERS DIED" << std::endl;
     #endif
     }
   }
@@ -248,24 +248,42 @@ Game::particles(void)
 void
 Game::display_ui(void)
 {
-  std::shared_ptr<SDL_Texture> texture;
-
   // position on the renderer
-  SDL_Rect dst_pos;
+  SDL_Rect dst_pos, src_pos;;
   dst_pos.x = 0; dst_pos.y = 0; dst_pos.h = NUMBER_HEIGHT;
+  src_pos.x = 0; src_pos.y = 0;
 
-  dst_pos.w = this->players[0]->update_score_texture(this->rend, this->left_score);
-  SDL_RenderCopy(rend.get(), this->left_score.get(), &dst_pos, &dst_pos);
+  // score
+  src_pos.h = NUMBER_HEIGHT;
+  src_pos.w = this->players[0]->update_score_texture(this->rend, this->left_score);
+  dst_pos.w = src_pos.w;
+  SDL_RenderCopy(rend.get(), this->left_score.get(), &src_pos, &dst_pos);
+
+  // life
+  dst_pos.y = NUMBER_HEIGHT + 5; dst_pos.h = LIFE_HEIGHT;
+  src_pos.h = LIFE_HEIGHT;
+  src_pos.w = this->players[0]->update_life_texture(this->rend, this->left_life);
+  dst_pos.w = src_pos.w;
+  SDL_RenderCopy(rend.get(), this->left_life.get(), &src_pos, &dst_pos);
   
   if (this->mp) {
     // set dst_pos at the right side of the screen
-    SDL_Rect src_pos;
-    src_pos.x = 0; src_pos.y = 0; src_pos.h = NUMBER_HEIGHT;
-    src_pos.w = this->players[1]->update_score_texture(this->rend, this->right_score);
 
+    //score
+    src_pos.h = NUMBER_HEIGHT;
+    src_pos.w = this->players[1]->update_score_texture(this->rend, this->right_score);
     dst_pos.x = SCREEN::SCREEN_WIDTH - src_pos.w;
+    dst_pos.y = 0;
     dst_pos.w = src_pos.w;
     SDL_RenderCopy(rend.get(), this->right_score.get(), &src_pos, &dst_pos);
+
+    // life
+    src_pos.h = LIFE_HEIGHT;
+    src_pos.w = this->players[1]->update_life_texture(this->rend, this->right_life);
+    dst_pos.x = SCREEN::SCREEN_WIDTH - src_pos.w;
+    dst_pos.w = src_pos.w;
+    dst_pos.y = NUMBER_HEIGHT + 5;
+    SDL_RenderCopy(rend.get(), this->right_life.get(), &src_pos, &dst_pos);
   }
 }
 
