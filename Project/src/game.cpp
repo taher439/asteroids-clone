@@ -20,13 +20,13 @@ Game::init(int asteroid_num, bool mp)
   this->total_asteroids = asteroid_num;
   Vec2<double> center(0, 0);
 
+  this->players.push_back(std::make_shared<Player>(640, 480));
+
   if (mp) {
     std::shared_ptr<Player> sec_p = std::make_shared<Player>(700, 480);
     sec_p->hdl.second_p = true;
     this->players.push_back(sec_p);
   }
-
-  this->players.push_back(std::make_shared<Player>(640, 480));
 
   // #ifdef DEBUG
   // this->hitboxes_test();
@@ -242,11 +242,20 @@ Game::display_ui(void)
   SDL_Rect dst_pos;
   dst_pos.x = 0; dst_pos.y = 0; dst_pos.h = NUMBER_HEIGHT;
 
-  for (auto p: this->players) {
-    dst_pos.w = p->update_score_texture(this->rend);
-    texture = p->get_score_texture();
-    SDL_RenderCopy(rend.get(), texture.get(), &dst_pos, &dst_pos);
+  dst_pos.w = this->players[0]->update_score_texture(this->rend);
+  texture = this->players[0]->get_score_texture();
+  SDL_RenderCopy(rend.get(), texture.get(), &dst_pos, &dst_pos);
+  
+  if (this->mp) {
     // TODO: décalage de la position à l'opposé pour le 2e joueur
+    SDL_Rect src_pos;
+    src_pos.x = 0; src_pos.y = 0; src_pos.h = NUMBER_HEIGHT;
+    src_pos.w = this->players[1]->update_score_texture(this->rend);
+
+    dst_pos.x = SCREEN::SCREEN_WIDTH - src_pos.w;
+    dst_pos.w = src_pos.w;
+    texture = this->players[1]->get_score_texture();
+    SDL_RenderCopy(rend.get(), texture.get(), &src_pos, &dst_pos);
   }
 }
 
