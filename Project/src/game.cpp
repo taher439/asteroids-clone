@@ -15,6 +15,7 @@ Game::init(int asteroid_num, bool mp)
   this->current_level = 1;
   this->win = SDL_wrapper::creat_win(this->SCREEN_WIDTH, this->SCREEN_HEIGHT);
   this->rend = SDL_wrapper::creat_rend(this->win);
+  SDL_wrapper::load_score_textures(this->rend);
   //initialize the asteroid field
   this->total_asteroids = asteroid_num;
   Vec2<double> center(0, 0);
@@ -160,7 +161,8 @@ Game::proc_input(void)
       if (mp)
         handle_event(this->players[1]->hdl);
     }
-
+    
+    this->display_ui();
     // update players => move them, draw them and their blasts
     this->update_players();
     // update moving objects => move them, detect blast collision
@@ -232,13 +234,29 @@ Game::particles(void)
 }
 
 void
+Game::display_ui(void)
+{
+  std::shared_ptr<SDL_Texture> texture;
+
+  // position on the renderer
+  SDL_Rect dst_pos;
+  dst_pos.x = 0; dst_pos.y = 0; dst_pos.h = NUMBER_HEIGHT;
+
+  for (auto p: this->players) {
+    dst_pos.w = p->update_score_texture(this->rend);
+    texture = p->get_score_texture();
+    SDL_RenderCopy(rend.get(), texture.get(), &dst_pos, &dst_pos);
+    // TODO: décalage de la position à l'opposé pour le 2e joueur
+  }
+}
+
+void
 Game::update_objects(void)
 {
   Vec2<double> tmp_v;
   double height;
   for (auto mo = this->moving_objects.begin(); mo != this->moving_objects.end(); mo++)
   {
-    // TODO : liste générale de blasts mais identifiant du player pour un blast
     (*mo)->update(this->players);
 
     // if object died, generate particles

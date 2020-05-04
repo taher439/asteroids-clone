@@ -180,3 +180,63 @@ SDL_wrapper::draw_circle(const std::shared_ptr<SDL_Renderer>& rend, int32_t cent
       }
    }
 }
+
+std::map<char, std::shared_ptr<SDL_Texture>>
+SDL_wrapper::numbers {
+  {'0', nullptr},
+  {'1', nullptr},
+  {'2', nullptr},
+  {'3', nullptr},
+  {'4', nullptr},
+  {'5', nullptr},
+  {'6', nullptr},
+  {'7', nullptr},
+  {'8', nullptr},
+  {'9', nullptr}
+};
+
+void
+SDL_wrapper::load_score_textures(const std::shared_ptr<SDL_Renderer>& rend)
+{
+  SDL_wrapper::numbers['0'] = SDL_wrapper::load_texture(rend, DATA_PATH+"zero.bmp");
+  SDL_wrapper::numbers['1'] = SDL_wrapper::load_texture(rend, DATA_PATH+"one.bmp");
+  SDL_wrapper::numbers['2'] = SDL_wrapper::load_texture(rend, DATA_PATH+"two.bmp");
+  SDL_wrapper::numbers['3'] = SDL_wrapper::load_texture(rend, DATA_PATH+"three.bmp");
+  SDL_wrapper::numbers['4'] = SDL_wrapper::load_texture(rend, DATA_PATH+"four.bmp");
+  SDL_wrapper::numbers['5'] = SDL_wrapper::load_texture(rend, DATA_PATH+"five.bmp");
+  SDL_wrapper::numbers['6'] = SDL_wrapper::load_texture(rend, DATA_PATH+"six.bmp");
+  SDL_wrapper::numbers['7'] = SDL_wrapper::load_texture(rend, DATA_PATH+"seven.bmp");
+  SDL_wrapper::numbers['8'] = SDL_wrapper::load_texture(rend, DATA_PATH+"height.bmp");
+  SDL_wrapper::numbers['9'] = SDL_wrapper::load_texture(rend, DATA_PATH+"nine.bmp");
+}
+
+int
+SDL_wrapper::update_score(
+  const std::shared_ptr<SDL_Renderer>& rend, 
+  std::shared_ptr<SDL_Texture> texture,
+  const int score)
+{
+  int height, width;
+  height = NUMBER_HEIGHT; width = 6*NUMBER_WIDTH;
+
+  std::string string_score = std::to_string(score);
+
+  // draw on the texture
+  SDL_SetRenderTarget(rend.get(), texture.get());
+  SDL_RenderClear(rend.get());
+
+  // digit position on the texture
+  SDL_Rect drect;
+  drect.x = 0; drect.y = 0; drect.h = NUMBER_HEIGHT; drect.w = NUMBER_WIDTH;
+
+  for (auto n: string_score) {
+    SDL_RenderCopy(rend.get(), SDL_wrapper::numbers[n].get(), NULL, &drect);
+    drect.x += NUMBER_WIDTH;
+  }
+
+  // reset renderer
+  SDL_SetRenderTarget(rend.get(), NULL);
+
+  // return the number width on the texture
+  return string_score.length()*NUMBER_WIDTH;
+}

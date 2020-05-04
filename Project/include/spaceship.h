@@ -23,6 +23,7 @@ class Spaceship: public Moving_object
     void              detect_blast_collision  (std::vector<std::shared_ptr<blast>>&) override;
     void              update                  (const std::vector<std::shared_ptr<Player>>&) override;
     bool              has_type                (std::string) override;
+    int               get_score               (void) override;
 
     inline void       set_shoot_speed         (double speed) {this->shoot_speed = speed;};
     

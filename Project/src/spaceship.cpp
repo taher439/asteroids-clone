@@ -33,6 +33,9 @@ Spaceship::update(const std::vector<std::shared_ptr<Player>>& players)
   this->move();
   for (auto p: players) {
     this->detect_blast_collision(p->get_blasts());
+    if (!this->is_alive()) {
+      p->update_score(this->get_score());
+    }
   }
   this->detect_player_collision(players);
   this->detect_player_shot(players);
@@ -161,4 +164,10 @@ Spaceship::draw_fire()
             s--;
         }
     }
+}
+
+int
+Spaceship::get_score(void)
+{
+  return SPACESHIP_SCORE;
 }

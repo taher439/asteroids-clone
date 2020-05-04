@@ -121,3 +121,26 @@ Player::is_invincible(void) {
   }
   return this->invincible;
 }
+
+void 
+Player::update_score(int score) {
+  this->score += score;
+}
+
+int
+Player::update_score_texture(const std::shared_ptr<SDL_Renderer>& rend) 
+{ 
+  if (this->score == this->old_score)
+    return std::to_string(this->score).length() * NUMBER_WIDTH;
+
+  // update old score
+  this->old_score = this->score;
+
+  if(this->score_texture == nullptr) {
+    // max score = 999 999
+    this->score_texture = SDL_wrapper::create_texture(rend, NUMBER_HEIGHT, 6*NUMBER_WIDTH);
+  }
+  
+  // update our score texture
+  return SDL_wrapper::update_score(rend, score_texture, this->score);
+}

@@ -13,6 +13,7 @@
 #include <thread>
 #include <mutex>
 #include <list>
+#include <map>
 #include <templates.h>
 
 #define PI 3.14159265
@@ -63,6 +64,7 @@ class Game
     std::shared_ptr<SDL_Surface>  surf;
     std::shared_ptr<SDL_Renderer> rend;
     std::shared_ptr<SDL_Event>    ev;
+    std::map<char, std::shared_ptr<SDL_Texture>> numbers;
     std::list<std::shared_ptr<Particle_container>> particle_clouds;
     std::list<std::shared_ptr<Moving_object>> moving_objects;
     std::vector<std::shared_ptr<Player>>   players;
@@ -115,6 +117,7 @@ class Game
     <Particle_container>  generate_particles    (Vec2<double>, int);
 
     // game update functions
+    void                  display_ui            (void);
     void                  particles             (void);
     void                  update_objects        (void);
     void                  update_players        (void);

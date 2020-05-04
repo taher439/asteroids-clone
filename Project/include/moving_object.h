@@ -14,6 +14,12 @@
 #define DEFAULT_SPACESHIP_HEIGHT 20.0
 #define DEFAULT_SPACESHIP_WIDTH 41.0
 
+#define BIG_ASTEROID_SCORE 50
+#define MID_ASTEROID_SCORE 70
+#define SMALL_ASTEROID_SCORE 100
+#define XSMALL_ASTEROID_SCORE 150
+#define SPACESHIP_SCORE 0
+
 class Player;
 
 class Moving_object
@@ -52,6 +58,7 @@ class Moving_object
     virtual void update (const std::vector<std::shared_ptr<Player>>&) = 0;
     virtual void detect_blast_collision(std::vector<std::shared_ptr<blast>>&) = 0; 
     virtual bool has_type (std::string) = 0;
+    virtual int  get_score (void) = 0; 
 
   protected:
     void move         (void);

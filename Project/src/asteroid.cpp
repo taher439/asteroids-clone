@@ -91,6 +91,9 @@ Asteroid::update(const std::vector<std::shared_ptr<Player>>& players)
   this->move();
   for (auto p: players) {
     this->detect_blast_collision(p->get_blasts());
+    if (!this->is_alive()) {
+      p->update_score(this->get_score());
+    }
   }
   this->detect_player_collision(players);
 }
@@ -140,21 +143,30 @@ Asteroid::has_type (std::string str)
     }
 }
 
-// void 
-// Asteroid::detect_player_collision(const std::vector<std::shared_ptr<Player>>& players)
-// {
-//   // auto ccw   = [](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C) 
-//   //               {return (C.y - A.y) * (B.x - A.x) < (B.y-A.y) * (C.x-A.x);};
-//   // auto inter = [&](Vec2<double>& A, Vec2<double>& B, Vec2<double>& C, Vec2<double>& D)
-//   //               {ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D);};
-  
-//   for (auto p: players) {
-//     if (!p->is_invincible() &&
-//         this->detect_inter(p->A, p->B) || 
-//         this->detect_inter(p->C, p->D) || 
-//         this->detect_inter(p->E, p->F)) 
-//     {
-//       p->asteroid_collision();
-//     }
-//   }
-// }
+int
+Asteroid::get_score(void)
+{
+  int score;
+  switch (this->height) {
+    case (int)BIG:
+      score = BIG_ASTEROID_SCORE;
+      break;
+
+    case (int)MID:
+      score = MID_ASTEROID_SCORE;
+      break;
+
+    case (int)SMALL:
+      score = SMALL_ASTEROID_SCORE;
+      break;
+
+    case (int)XSMALL:
+      score = XSMALL_ASTEROID_SCORE;
+      break;
+
+    default:
+      score = 0;
+      break;
+  }
+  return score;
+}
